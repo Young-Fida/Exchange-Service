@@ -2,6 +2,12 @@
 
 외국인 관광객을 위한 모바일 웹 기반 환전·ATM 안내 UI 프로토타입입니다. PC에서도 중앙의 모바일 화면 폭을 유지합니다.
 
+## 웹페이지 바로 열기
+
+**[QR 환전 서비스 열기](https://kimdongyoung27.github.io/Exchange-Service/)**
+
+설치 없이 브라우저에서 이용할 수 있습니다. 저장소를 다운로드한 경우 루트의 `index.html`을 열어도 됩니다.
+
 ## 실행
 
 Node.js 18 이상이 필요합니다. 별도 패키지 설치 없이 실행할 수 있습니다.
@@ -36,6 +42,13 @@ server.mjs        # 로컬 정적 서버
 ```
 
 정적 호스팅에는 `dist/` 디렉터리를 배포하면 됩니다.
+
+GitHub Pages는 `gh-pages` 브랜치의 루트에서 제공됩니다. `dist/`를 수정하고 `main`에 커밋한 뒤 다음 명령으로 사이트를 갱신합니다.
+
+```sh
+git push origin main
+git subtree push --prefix dist origin gh-pages
+```
 
 ## 구현 범위
 
