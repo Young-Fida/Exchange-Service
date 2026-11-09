@@ -1,5 +1,9 @@
 # QR 환전 서비스 프로토타입
 
+공식 배포 주소: [환전 서비스 열기](https://exchange-service-ten.vercel.app/)
+
+관리 프로젝트: Vercel `YoungK / exchange-service`. `Young-Fida/Exchange-Service`의 `main` 브랜치에 푸시하면 이 프로젝트로 자동 배포됩니다. 앞으로 공유 링크와 QR의 목적지는 `https://exchange-service-ten.vercel.app/`를 사용합니다. 이전 팀원의 배포 주소는 관리하지 않습니다.
+
 외국인 관광객을 위한 모바일 웹 기반 환전·ATM 안내 UI입니다. PC에서도 중앙의 모바일 화면 폭을 유지합니다.
 
 저장소: https://github.com/young-fida/Exchange-Service
