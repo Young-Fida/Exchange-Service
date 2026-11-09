@@ -1,0 +1,23 @@
+{
+  "CNY": {
+    "local": "CNY-collage-reverse.jpg",
+    "url": "https://www.currs.info/images/valuty/cny_12.jpg",
+    "source": "https://www.currs.info/chinese-yuan-renminbi/banknotes",
+    "title": "Banknote 100 yuan (reverse)",
+    "side": "reverse"
+  },
+  "JPY": {
+    "local": "JPY-collage-reverse.jpg",
+    "url": "https://www.currs.info/images/valuty/jpy_2.jpg",
+    "source": "https://www.currs.info/japanese-yen/banknotes",
+    "title": "Banknote 1 000 yen (reverse)",
+    "side": "reverse"
+  },
+  "USD": {
+    "local": "USD-collage-reverse.jpg",
+    "url": "https://www.currs.info/images/valuty/usd_2.jpg",
+    "source": "https://www.currs.info/united-states-dollar/banknotes",
+    "title": "Banknote 1 United States dollar (reverse)",
+    "side": "reverse"
+  }
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "file": "1000-scan-front.jpg",
+    "url": "https://www.currs.info/images/valuty/krw_1.jpg",
+    "source": "https://www.currs.info/south-korean-won/banknotes",
+    "label": "Banknote 1 000 won (obverse)"
+  },
+  {
+    "file": "5000-scan-front.jpg",
+    "url": "https://www.currs.info/images/valuty/krw_2.jpg",
+    "source": "https://www.currs.info/south-korean-won/banknotes",
+    "label": "Banknote 5 000 won (obverse)"
+  },
+  {
+    "file": "5000-scan-back.jpg",
+    "url": "https://www.currs.info/images/valuty/krw_3.jpg",
+    "source": "https://www.currs.info/south-korean-won/banknotes",
+    "label": "Banknote 5 000 won (reverse)"
+  },
+  {
+    "file": "10000-scan-front.jpg",
+    "url": "https://www.currs.info/images/valuty/krw_4.jpg",
+    "source": "https://www.currs.info/south-korean-won/banknotes",
+    "label": "Banknote 10 000 won (obverse)"
+  },
+  {
+    "file": "10000-scan-back.jpg",
+    "url": "https://www.currs.info/images/valuty/krw_5.jpg",
+    "source": "https://www.currs.info/south-korean-won/banknotes",
+    "label": "Banknote 10 000 won (reverse)"
+  },
+  {
+    "file": "50000-scan-front.jpg",
+    "url": "https://www.currs.info/images/valuty/krw_6.jpg",
+    "source": "https://www.currs.info/south-korean-won/banknotes",
+    "label": "Banknote 50 000 won (obverse)"
+  },
+  {
+    "file": "50000-scan-back.jpg",
+    "url": "https://www.currs.info/images/valuty/krw_7.jpg",
+    "source": "https://www.currs.info/south-korean-won/banknotes",
+    "label": "Banknote 50 000 won (reverse)"
+  }
+]

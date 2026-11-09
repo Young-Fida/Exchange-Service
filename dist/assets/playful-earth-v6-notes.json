@@ -1,0 +1,13 @@
+{
+  "design": "Deliberately crude fictional world: uneven ink coastlines, flat blue sea, simple continent blocks and sparse real-banknote accents. No animals, landmarks or realistic ocean photograph.",
+  "mapIsIllustrative": true,
+  "regions": ["Asia", "North America", "South America", "Africa", "Europe", "Australia", "Greenland", "Arctic", "Antarctica"],
+  "heroBanknote": {"file":"currency-atlas/KRW.jpg","type":"Actual 10000-won front image with Sejong","orientation":"Front-facing rectangular paper, 20-degree in-plane rotation; no perspective distortion","corner":"Points at the fictional Korean peninsula"},
+  "accentBanknotes": ["USD reverse", "EUR architecture", "MGA architecture", "CNY reverse", "JPY reverse denomination", "TWD denomination", "AUD denomination and stars"],
+  "portraitPolicy": "Sejong retained. Chinese and US political portraits excluded by using reverse sides. Other accents use architecture, numerals or portrait-free crops.",
+  "interaction": ["First tap: note shrinks into Korea in about 410ms", "Continents and sea perimeter interpolate from globe into a flat map; total about 1290ms", "First tap stays on home", "Tap the unfolded map or Start exchange to enter application step 01/04", "Replay restores and repeats the reveal"],
+  "verified": {"globeToMap":true,"noteHiddenAfterInsertion":true,"mapToApply":true,"startButtonToApply":true,"applyStartsAt01Of04":true,"replay":true,"englishCopy":true,"mobile390x844NoOverflow":true,"mobile320x650NoOverflow":true,"mobileCTAAboveFixedNavigation":true},
+  "accessibility": "Native buttons, expanded/busy state and translated instructions. Reduced-motion mode implements an immediate transition; not separately browser-emulation-tested.",
+  "implementation": ["playful-earth.js", "app.js", "styles.css", "index.html"],
+  "scope": "Local prototype only. No Git push or publication in this revision. Existing banknote photograph provenance is retained under currency-atlas."
+}
