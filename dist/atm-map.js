@@ -2,6 +2,8 @@
 window.AtmMap=(()=>{
  const areas={"haeundae":{"lat":35.1631,"lng":129.1635,"names":["해운대","Haeundae","海雲台","海云台","海雲臺"]},"gwangalli":{"lat":35.1532,"lng":129.1186,"names":["광안리","Gwangalli","広安里","广安里","廣安里"]},"nampo":{"lat":35.0977,"lng":129.0325,"names":["남포·중구","Nampo · Jung-gu","南浦・中区","南浦·中区","南浦·中區"]},"seomyeon":{"lat":35.1579,"lng":129.0592,"names":["서면·부산진구","Seomyeon · Busanjin-gu","西面・釜山鎮区","西面·釜山镇区","西面·釜山鎮區"]},"busanStation":{"lat":35.1151,"lng":129.0415,"names":["부산역·동구","Busan Station · Dong-gu","釜山駅・東区","釜山站·东区","釜山站·東區"]},"airport":{"lat":35.1796,"lng":128.938,"names":["김해공항","Gimhae Airport","金海空港","金海机场","金海機場"]},"gijang":{"lat":35.2448,"lng":129.2222,"names":["기장","Gijang","機張","机张","機張"]},"osiria":{"lat":35.1962,"lng":129.2083,"names":["오시리아","Osiria","オシリア","奥西利亚","奧西利亞"]},"songjeong":{"lat":35.1808,"lng":129.1994,"names":["송정","Songjeong","松亭","松亭","松亭"]},"centum":{"lat":35.1691,"lng":129.1328,"names":["센텀시티","Centum City","センタムシティ","Centum City","Centum City"]},"yeongdo":{"lat":35.0905,"lng":129.0678,"names":["영도","Yeongdo","影島","影岛","影島"]},"songdo":{"lat":35.0754,"lng":129.0166,"names":["송도·서구","Songdo · Seo-gu","松島・西区","松岛·西区","松島·西區"]},"dongnae":{"lat":35.2056,"lng":129.0785,"names":["동래","Dongnae","東萊","东莱","東萊"]},"geumjeong":{"lat":35.2431,"lng":129.0922,"names":["부산대·금정구","Pusan National University · Geumjeong-gu","釜山大学・金井区","釜山大学·金井区","釜山大學·金井區"]},"sasang":{"lat":35.1629,"lng":128.9847,"names":["사상","Sasang","沙上","沙上","沙上"]},"hadan":{"lat":35.1062,"lng":128.9668,"names":["하단·사하구","Hadan · Saha-gu","下端・沙下区","下端·沙下区","下端·沙下區"]},"dadaepo":{"lat":35.0485,"lng":128.9669,"names":["다대포","Dadaepo","多大浦","多大浦","多大浦"]},"deokcheon":{"lat":35.2101,"lng":129.0053,"names":["덕천·북구","Deokcheon · Buk-gu","徳川・北区","德川·北区","德川·北區"]},"suyeong":{"lat":35.1679,"lng":129.1145,"names":["수영","Suyeong","水営","水营","水營"]},"yeonje":{"lat":35.1861,"lng":129.0812,"names":["연산·연제구","Yeonsan · Yeonje-gu","蓮山・蓮堤区","莲山·莲堤区","蓮山·蓮堤區"]},"daeyeon":{"lat":35.1354,"lng":129.1006,"names":["대연·남구","Daeyeon · Nam-gu","大淵・南区","大渊·南区","大淵·南區"]},"myeongji":{"lat":35.0975,"lng":128.9181,"names":["명지·강서구","Myeongji · Gangseo-gu","鳴旨・江西区","鸣旨·江西区","鳴旨·江西區"]},"busanGangseo":{"lat":35.2121,"lng":128.9805,"names":["대저·강서구청","Daejeo · Gangseo District Office","大渚・江西区庁","大渚·江西区厅","大渚·江西區廳"]}};
  const text={
+  departure:['출발점','Starting point','出発地点','出发点','出發點'],
+
   startWalk:['내 위치에서 길찾기 시작','Start walking from my location','現在地から徒歩案内','从我的位置开始导航','從我的位置開始導航'],
   stopWalk:['안내 종료','End guidance','案内を終了','结束导航','結束導航'],
   tracking:['내 위치를 따라 이동 중 · 도보 경로','Following your location · Walking route','現在地を追跡中・徒歩ルート','正在跟随位置 · 步行路线','正在跟隨位置 · 步行路線'],
@@ -64,14 +66,14 @@ window.AtmMap=(()=>{
     const timer=setTimeout(()=>finish(Error('MAP')),15000);
     window.__qrMapReady=()=>finish();
     window.gm_authFailure=()=>{window.dispatchEvent(new Event('qr-map-auth-error'));finish(Error('MAP'));};
-    tag.src='https://maps.googleapis.com/maps/api/js?'+new URLSearchParams({key:config.key,loading:'async',callback:'__qrMapReady',language,v:'weekly'});
+    tag.src='https://maps.googleapis.com/maps/api/js?'+new URLSearchParams({key:config.key,loading:'async',callback:'__qrMapReady',language,region:'KR',v:'weekly'});
     tag.async=true;tag.onerror=()=>finish(Error('MAP'));document.head.append(tag);
    });
   })().catch(error=>{sdkPromise=null;throw error;});
   return sdkPromise;
  }
  function attach({root,language,area,labels,request,onCopy,context,onContextChange}){
-  let disposed=false,map,radar,radarMarker,routeLine,watchId,navItem,navGeneration=0,lastRouteAt=0,routeOrigin,markers=[],userMarker,items=[],selected,queryId=0,controller,live=false,walkState='pending';
+  let disposed=false,map,radar,radarMarker,startMarker,routeLine,watchId,navItem,navGeneration=0,lastRouteAt=0,routeOrigin,markers=[],userMarker,items=[],selected,queryId=0,controller,live=false,walkState='pending';
   area=context?.area||area;let centre=context?.centre||areas[area]||areas.haeundae;live=Boolean(context?.live);
   const i=['ko','en','ja','zh-CN','zh-TW'].indexOf(language),t=k=>text[k][i<0?1:i];
   const el=(name,cls,content)=>{const x=document.createElement(name);if(cls)x.className=cls;if(content)x.textContent=content;return x;};
@@ -85,7 +87,7 @@ window.AtmMap=(()=>{
   const zoom=el('div','real-map-zoom');for(const [symbol,delta,key] of [['+',1,'zoomIn'],['−',-1,'zoomOut']]){const b=el('button','',symbol);b.setAttribute('aria-label',t(key));b.onclick=()=>map&&map.setZoom(map.getZoom()+delta);zoom.append(b);}status.setAttribute('role','status');
   const routingNote=el('p','real-routing-note');routingNote.setAttribute('role','status');
   const dock=el('section','real-map-dock'),heading=el('h1','',t('title')),basis=el('p','real-map-basis',t('area')),details=el('div','real-atm-details'),list=el('div','real-atm-list'),retry=el('button','real-retry',t('retry'));
-  const frame=el('div','real-map-frame');frame.append(canvas,status,zoom);root.append(frame,dock);dock.append(heading,basis,details,list,retry,consent);
+  const frame=el('div','real-map-frame');frame.append(canvas,status,zoom);root.append(frame,dock);dock.append(heading,basis);if(pickup)dock.append(pickup.element);dock.append(details,list,retry,consent);
   const credit=el('a','google-places-credit',t('source'));credit.href='https://maps.google.com/';credit.target='_blank';credit.rel='noopener noreferrer';dock.append(credit);
   
   function choose(item,confirmed=false){
@@ -137,7 +139,7 @@ window.AtmMap=(()=>{
    const node=el('div','radar-origin'+(live?' is-live':''));node.append(el('span','radar-beam'),el('span','radar-dot'));
    radarMarker=new google.maps.marker.AdvancedMarkerElement({map,position:centre,content:node,title:live?t('nearby'):t('area'),zIndex:0});
   }
-  function stopNavigation(){navGeneration++;if(watchId!==undefined)navigator.geolocation.clearWatch(watchId);watchId=undefined;navItem=null;routeLine?.setMap(null);routeLine=null;}
+  function stopNavigation(){navGeneration++;if(watchId!==undefined)navigator.geolocation.clearWatch(watchId);watchId=undefined;navItem=null;startMarker&&(startMarker.map=null);startMarker=null;routeLine?.setMap(null);routeLine=null;}
   async function startNavigation(item,button){
    pickup?.select(item);
    if(!navigator.geolocation){status.textContent=t('denied');return;}
@@ -149,7 +151,7 @@ window.AtmMap=(()=>{
      if(!response.ok)throw Error('ROUTE');const row=(await response.json()).rows?.[0];if(row?.condition!=='ROUTE_EXISTS'||!row.path?.length)throw Error('ROUTE');
      if(disposed||generation!==navGeneration)throw Error('STALE');item.walk={distanceMeters:row.distanceMeters,durationMillis:row.durationMillis,path:row.path};const summary=details.querySelector('.real-walk-summary');if(summary)summary.textContent=walkLabel(item);routeOrigin=origin;lastRouteAt=Date.now();routeLine?.setMap(null);routeLine=new google.maps.Polyline({map,path:row.path,strokeColor:'#0575e6',strokeWeight:6,strokeOpacity:1});
     };
-    try{await refresh({lat:centre.lat,lng:centre.lng});if(disposed||generation!==navGeneration)return;navItem=item;userMarker&&(userMarker.map=null);details.querySelector('.real-walk-summary').textContent=walkLabel(item);details.querySelector('.external-directions').href=mapsUrl(item,centre,language);status.textContent=t('tracking');basis.textContent=t('nearby');map.setCenter(centre);map.setZoom(17);button.disabled=false;button.textContent=t('stopWalk');button.onclick=()=>{stopNavigation();status.textContent='';choose(item);};
+    try{await refresh({lat:centre.lat,lng:centre.lng});if(disposed||generation!==navGeneration)return;navItem=item;startMarker=new google.maps.marker.AdvancedMarkerElement({map,position:{lat:centre.lat,lng:centre.lng},content:el('span','departure-flag',t('departure')),title:t('departure'),zIndex:3});userMarker&&(userMarker.map=null);details.querySelector('.real-walk-summary').textContent=walkLabel(item);details.querySelector('.external-directions').href=mapsUrl(item,centre,language);status.textContent=t('tracking');basis.textContent=t('nearby');map.setCenter(centre);map.setZoom(17);button.disabled=false;button.textContent=t('stopWalk');button.onclick=()=>{stopNavigation();status.textContent='';choose(item);};
      let refreshing=false;watchId=navigator.geolocation.watchPosition(async pos=>{if(disposed||!navItem)return;pickup?.accept(pos);centre={lat:pos.coords.latitude,lng:pos.coords.longitude};updateRadar();map.panTo(centre);if(!refreshing&&Date.now()-lastRouteAt>30000&&distance(routeOrigin,centre)>40){refreshing=true;try{await refresh({lat:centre.lat,lng:centre.lng});status.textContent=t('tracking');}catch{status.textContent=t('navFailed');}finally{refreshing=false;}}},()=>{status.textContent=t('denied');},{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
     }catch{if(!disposed){status.textContent=t('navFailed');button.disabled=false;}}
    },()=>{if(!disposed){button.disabled=false;status.textContent=t('denied');}},{enableHighAccuracy:true,timeout:10000,maximumAge:0});

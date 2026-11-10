@@ -49,7 +49,7 @@ window.PickupTicket=(()=>{
   }
   function visibility(){fix=null;key='';render();}
   document.addEventListener('visibilitychange',visibility);const timer=setInterval(render,1000);render();
-  return {accept,start,clear(){target=null;request.atmTarget=null;key='';render();},select(item){target={id:item.id,name:item.name,lat:item.lat,lng:item.lng};request.atmTarget=target;key='';render();start();},dispose(){disposed=true;clearInterval(timer);if(watch!==undefined)navigator.geolocation?.clearWatch(watch);document.removeEventListener('visibilitychange',visibility);dialog?.close();dialog?.remove();ticket.remove();}};
+  return {element:ticket,accept,start,clear(){target=null;request.atmTarget=null;key='';render();},select(item){target={id:item.id,name:item.name,lat:item.lat,lng:item.lng};request.atmTarget=target;key='';render();start();},dispose(){disposed=true;clearInterval(timer);if(watch!==undefined)navigator.geolocation?.clearWatch(watch);document.removeEventListener('visibilitychange',visibility);dialog?.close();dialog?.remove();ticket.remove();}};
  }
  return {attach,gate,words};
 })();
