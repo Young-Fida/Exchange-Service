@@ -16,6 +16,30 @@ test('Google directions retain exact coordinates and selected place identity',()
  assert.equal(url.searchParams.get('destination'),'35.1624373,129.1612486');
  assert.equal(url.searchParams.get('destination_place_id'),'test-place');
  assert.equal(url.searchParams.get('api'),'1');
+ assert.equal(url.searchParams.get('travelmode'),'walking');
+});
+test('walking order uses actual routes rather than direct-line distances',()=>{
+ const items=[{id:'a',distance:10},{id:'b',distance:90},{id:'c',distance:5}];
+ const ranked=scope.window.AtmMap.rankWalking(items,[{condition:'ROUTE_EXISTS',distanceMeters:500,durationMillis:360000},{condition:'ROUTE_EXISTS',distanceMeters:200,durationMillis:180000},{condition:'ROUTE_NOT_FOUND'}]);
+ assert.equal(ranked[0].id,'b');assert.equal(ranked[0].walkRank,1);
+ assert.equal(ranked[1].id,'a');assert.equal(ranked[2].walkRank,null);
+ assert.equal(ranked[2].walk,null);
+});
+test('missing or invalid routes never acquire a walking rank',()=>{
+ const ranked=scope.window.AtmMap.rankWalking([{id:'a'},{id:'b'}],[{condition:'ROUTE_EXISTS',distanceMeters:NaN,durationMillis:5000},undefined]);
+ assert.ok(ranked.every(p=>p.walk===null&&p.walkRank===null));
+});
+test('expanded Busan areas and all map interface messages cover five languages',()=>{
+ assert.ok(Object.keys(scope.window.AtmMap.areas).length>=20);
+ for(const area of Object.values(scope.window.AtmMap.areas)){
+  assert.ok(area.lat>34.8&&area.lat<35.6&&area.lng>128.7&&area.lng<129.5);
+  assert.equal(area.names.length,5);
+ }
+ for(const [key,values] of Object.entries(scope.window.AtmMap.text)){
+  assert.equal(values.length,5,key);
+  for(const value of values)assert.ok(value.length>0,key);
+  for(const value of values.slice(1))assert.equal(/[가-힣]/.test(value),false,key);
+ }
 });
 test('map configuration does not expose the exchange-rate server secret',()=>{
  const handler=require('../api/map-config.js');
