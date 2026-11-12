@@ -78,7 +78,8 @@ window.AtmMap=(()=>{
   const i=['ko','en','ja','zh-CN','zh-TW'].indexOf(language),t=k=>text[k][i<0?1:i];
   const el=(name,cls,content)=>{const x=document.createElement(name);if(cls)x.className=cls;if(content)x.textContent=content;return x;};
   root.innerHTML='';
-  const pickup=request?window.PickupTicket.attach({root,request,language,t,distance,onCopy}):null;
+  let flowProgress,flowStep=2;
+  const pickup=request?window.PickupTicket.attach({root,request,language,t,distance,onCopy,onState:state=>{flowStep=state.unlocked?3:2;flowProgress?.setStep(flowStep);}}):null;
   const toolbar=el('div','real-map-toolbar'),select=el('select'),locate=el('button','real-location',t('locate'));
   select.setAttribute('aria-label',t('title'));Object.keys(areas).forEach(key=>{const o=el('option','',areas[key].names[i<0?1:i]);o.value=key;select.append(o);});select.value=area||'haeundae';
   toolbar.append(select,locate);root.append(toolbar);
@@ -87,7 +88,7 @@ window.AtmMap=(()=>{
   const zoom=el('div','real-map-zoom');for(const [symbol,delta,key] of [['+',1,'zoomIn'],['−',-1,'zoomOut']]){const b=el('button','',symbol);b.setAttribute('aria-label',t(key));b.onclick=()=>map&&map.setZoom(map.getZoom()+delta);zoom.append(b);}status.setAttribute('role','status');
   const routingNote=el('p','real-routing-note');routingNote.setAttribute('role','status');
   const dock=el('section','real-map-dock'),heading=el('h1','',t('title')),basis=el('p','real-map-basis',t('area')),details=el('div','real-atm-details'),list=el('div','real-atm-list'),retry=el('button','real-retry',t('retry'));
-  const frame=el('div','real-map-frame');frame.append(canvas,status,zoom);root.append(frame,dock);dock.append(heading,basis);if(pickup)dock.append(pickup.element);dock.append(details,list,retry,consent);
+  const frame=el('div','real-map-frame');frame.append(canvas,status,zoom);root.append(frame,dock);if(request){const progress=el('div','journey-progress map-flow-progress');dock.append(progress);flowProgress=window.createFlowProgress(progress,{step:flowStep,language});}dock.append(heading,basis);if(pickup)dock.append(pickup.element);dock.append(details,list,retry,consent);
   const credit=el('a','google-places-credit',t('source'));credit.href='https://maps.google.com/';credit.target='_blank';credit.rel='noopener noreferrer';dock.append(credit);
   
   function choose(item,confirmed=false){
@@ -173,7 +174,7 @@ window.AtmMap=(()=>{
   };
   const authError=()=>{if(!disposed)status.textContent=t('mapError');};window.addEventListener('qr-map-auth-error',authError);
   retry.onclick=()=>map?search():boot();boot();
-  return ()=>{disposed=true;stopNavigation();radar?.setMap(null);radarMarker&&(radarMarker.map=null);pickup?.dispose();controller?.abort();window.removeEventListener('qr-map-auth-error',authError);markers.forEach(m=>m.map=null);userMarker&&(userMarker.map=null);};
+  return ()=>{disposed=true;stopNavigation();radar?.setMap(null);radarMarker&&(radarMarker.map=null);pickup?.dispose();flowProgress?.dispose();controller?.abort();window.removeEventListener('qr-map-auth-error',authError);markers.forEach(m=>m.map=null);userMarker&&(userMarker.map=null);};
  }
  return {attach,distance,mapsUrl,rankWalking,areas,text};
 })();

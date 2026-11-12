@@ -1,0 +1,1 @@
+require('esbuild').buildSync({entryPoints:['src/rate-chart.jsx'],bundle:true,minify:true,format:'iife',outfile:'dist/rate-chart.js',define:{'process.env.NODE_ENV':'"production"'},legalComments:'eof',jsx:'automatic'});

@@ -29,7 +29,7 @@ test('30 m gate requires an explicit target, recent fix and useful GPS accuracy'
 test('QR is not generated before arrival and is removed again after leaving or changing ATM',()=>{
  const env=setup(),root=new env.Element('main');let metres=100;
  const request={code:'482917',expires:Date.now()+600000};
- const ticket=env.api.attach({root,request,language:'ko',t:k=>k,distance:()=>metres,onCopy(){}});
+ const states=[];const ticket=env.api.attach({root,request,language:'ko',t:k=>k,distance:()=>metres,onCopy(){},onState:state=>states.push(state.unlocked)});
  assert.equal(env.encoded(),0);
  ticket.select({id:'a',name:'ATM A',lat:35,lng:129});
  const pos=()=>({coords:{latitude:35,longitude:129,accuracy:5},timestamp:Date.now()});
@@ -39,5 +39,5 @@ test('QR is not generated before arrival and is removed again after leaving or c
  assert.match(text(root.children[0]),/482 917/);
  metres=31;env.fix(pos());assert.doesNotMatch(text(root.children[0]),/482 917/);
  ticket.select({id:'b',name:'ATM B',lat:36,lng:130});assert.doesNotMatch(text(root.children[0]),/482 917/);
- ticket.dispose();
+ assert.ok(states.includes(true));assert.equal(states.at(-1),false);ticket.dispose();
 });

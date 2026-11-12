@@ -1,0 +1,67 @@
+/* Astryx-compatible brand tokens, shared by the existing screens and React widgets. */
+:root,[data-astryx-theme="neutral"]{
+ --color-accent:#0575e6;--color-accent-hover:#0565c7;--color-text-primary:#15314e;
+ --color-text-secondary:#58718b;--color-background-body:#f5f9fe;--color-background-surface:#fff;
+ --radius-inner:8px;--radius-element:14px;--radius-container:22px;
+ --font-family-body:Inter,"Noto Sans KR",Arial,sans-serif;--font-family-heading:var(--font-family-body);
+ --ui-line:#e0e9f4;--ui-muted:#607890;--ui-blue:#0575e6;--ui-shadow:0 6px 22px #17365307;
+}
+button,a,input,select{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #0575e6;outline-offset:3px}
+.phone-app{background:linear-gradient(145deg,#f7fbff 0%,#fff 52%,#f2f7ff 100%)}
+#screen{padding-top:24px}
+.home-heading h1{font-size:34px;line-height:1.22;letter-spacing:-1.5px;color:#102b47}
+.home-heading{margin-bottom:8px}.toy-caption p{color:#617a93;font-size:12px}
+.toy-start{background:#fff;border:1px solid #d7e5f5;min-height:56px;padding-left:22px;box-shadow:var(--ui-shadow);font-size:15px}
+.toy-start-icon{height:40px;width:40px}.toy-stage{isolation:isolate}
+.section-label h2{font-size:18px;color:#15314e;letter-spacing:-.5px}
+.journey-list{border:1px solid var(--ui-line);border-radius:22px;background:#fff;padding:4px 18px;box-shadow:var(--ui-shadow)}
+.journey-item{padding:19px 0;gap:14px}.journey-item+.journey-item{border-top:1px solid #edf2f8}
+.journey-icon{background:#edf5ff;border-radius:12px}.journey-item h3{font-size:13px;color:#173653}.journey-item p{font-size:11px;line-height:1.7;color:var(--ui-muted)}
+.page-intro h1{color:#102e4d;letter-spacing:-1.2px;font-size:32px}.page-intro>p{font-size:12px;line-height:1.8;color:var(--ui-muted)}
+.step-head{margin-bottom:22px}.step-title{color:#526e89}.progress{gap:5px}.progress span{height:3px;border-radius:8px}
+.form-card{border:1px solid #e0eaf6;border-radius:22px;background:#fff;box-shadow:var(--ui-shadow);padding:21px}
+.field-label{font-size:11px;letter-spacing:.1px;color:#526e89}.currency-select{color:#183b60;font-weight:650}
+.amount-input,.estimate-amount{color:#102e4d;letter-spacing:-.9px;font-variant-numeric:tabular-nums}
+.source-card{border-color:#d3e3f7}.receive-card{background:linear-gradient(125deg,#f0f7ff,#fff)}
+.swap-button{background:#fff;border:1px solid #cfdded;box-shadow:0 4px 12px #17457412;color:#0575e6}
+.form-explainer{font-size:11px;line-height:1.8;color:#697f95}.apply-fixed-actions{border:1px solid #e0eaf6;border-radius:20px;background:#fffffff5;box-shadow:0 -5px 24px #17365308}
+.button.gold{background:#fded80;color:#183653;box-shadow:0 3px 9px #b3981e08;border-radius:14px;font-weight:750}
+.button.gold:hover{background:#ffe66b;box-shadow:0 5px 15px #a58d2420}
+.fixed-rates-button{background:#eef5ff;border-radius:14px;color:#0564c3;font-weight:650}
+.bottom-nav{height:70px;border-radius:22px;padding:6px 12px;border:1px solid #e1eaf6;box-shadow:0 7px 28px #15365510;background:#fffffff5}
+.bottom-nav>a,.bottom-nav>button{min-height:54px;color:#718297;font-size:10px;gap:4px}.bottom-nav .active{color:#173653}.bottom-nav .nav-icon{border-radius:11px;height:28px;min-width:43px}
+.drawer{background:#f7faff}.drawer-top h2{color:#143451}.drawer-language .language-toggle,.login-entry{border:1px solid var(--ui-line);box-shadow:none;border-radius:17px;background:#fff}
+.drawer-language .language-menu{border-radius:17px}.drawer-language [data-lang]{color:#28425e}.placeholder-menu{color:#8191a4}
+.map-mode #screen{padding:0}.real-map-toolbar{padding:10px 14px;background:#fff;gap:8px}.real-map-toolbar select{border-color:var(--ui-line);border-radius:13px;color:#1b3c5d;min-height:44px;font-size:13px}
+.real-location{border-radius:13px;box-shadow:none;font-size:12px}.real-map-dock{border-radius:24px 24px 0 0;box-shadow:0 -7px 22px #1536530b;border-color:#e2eaf5;padding-left:18px;padding-right:18px}
+.real-map-dock h1{font-size:17px;color:#153451}.real-map-basis{font-size:10px!important}.real-atm-option{border-radius:16px;border-color:#e0e8f2;box-shadow:none;background:#fff}
+.real-atm-option.active{border-color:#0575e6;background:#f0f7ff}.atm-card-name{font-size:13px;line-height:1.55}.atm-card-distance{font-size:12px}.atm-card-rank{border-radius:10px}
+.real-map-dock .proximity-ticket{background:#f6f9fe;border:1px solid #e5edf6;border-radius:16px}.proximity-copy strong{font-size:12px}.proximity-copy small{color:#617b94}
+.rates-dialog{border-radius:26px;border:1px solid #e3ecf7;box-shadow:0 22px 80px #12304d26}.rates-dialog-head{padding:22px 22px 16px}.rates-dialog h2{font-size:22px;color:#153451}
+.rates-dialog td{padding:18px 0;border-color:#edf2f8}.rates-dialog td strong{font-size:13px;color:#294d72}.rates-dialog td:last-child{font-size:15px;font-weight:650;color:#153b64;font-variant-numeric:tabular-nums}.rates-dialog td small{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:#69819b;font-size:10px;margin-top:7px}
+.rate-chart-trigger{margin:0;padding:2px 6px;min-width:116px;height:36px;border:0;background:#eef6ff;border-radius:9px;display:inline-flex;gap:4px;justify-content:center;align-items:center;color:#0575e6;box-shadow:inset 0 0 0 1px #e0ecfa}
+.rate-chart-trigger:hover{background:#e4f1ff;box-shadow:inset 0 0 0 1px #b4d6ff}.rate-chart-trigger>div{display:contents}.rate-chart-trigger svg{width:102px!important;height:34px!important;display:block;stroke:none;fill:none}.mini-trend-open{font-size:14px;color:#5080b5}.mini-trend-placeholder{color:#7c94ac;font-size:14px}
+.fx-chart-sheet{border-radius:28px 28px 0 0;background:#fff;box-shadow:0 -15px 70px #102f542b}
+.fx-sheet-head{padding:26px 22px 17px;border-color:#edf2f8}.fx-sheet-head h2{font-size:22px;letter-spacing:-.7px}.fx-sheet-head>div>span{font-size:10px;font-weight:650;letter-spacing:1.4px;color:#6c86a0}
+.fx-sheet-scroll{padding:16px 22px calc(24px + env(safe-area-inset-bottom,0px))}.fx-source{font-size:10px;color:#6b829a;margin-bottom:16px}
+.fx-periods{background:#f0f5fc;padding:4px;gap:4px;border:1px solid #e4edf8;border-radius:13px}
+.fx-periods .fx-period-button{display:flex;align-items:center;justify-content:center;width:50%;flex:1;min-height:36px;height:36px;padding:0 14px;border:0;border-radius:9px;color:#627b94;background:transparent;box-shadow:none;font:650 12px var(--font-family-body)}
+.fx-periods .fx-period-button[aria-pressed=true]{background:#fff;color:#0575e6;box-shadow:0 2px 6px #204c7510}
+.fx-quote{padding:20px 0 5px;margin:4px 0 0}.fx-quote>span{font-size:11px;color:#6b829a}.fx-quote>strong{font-size:42px;font-weight:750;color:#112e4b;letter-spacing:-1.8px;line-height:1.2}.fx-quote>strong small{font-size:13px;letter-spacing:0;color:#7e94aa;margin-left:4px}.fx-quote time{margin-top:3px}
+.fx-change{flex-direction:row;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0 15px}.fx-change>b{padding:5px 9px;background:#eaf4ff;border-radius:8px;color:#0565c7;font-size:12px}.fx-change span{font-size:9px;color:#71869c}
+.fx-chart-mount{position:relative;margin:0 -2px 8px;width:calc(100% + 4px);padding:10px 0 0;min-height:0!important;background:linear-gradient(180deg,#fff 0%,#f4f9ff 100%);border-radius:18px;overflow:hidden}
+.fx-chart-mount:not(:empty){min-height:154px!important}.fx-chart-mount svg{height:144px!important;width:100%!important;stroke:none}.fx-axis-note{font-size:9px;color:#8296a9;line-height:1.7;margin:10px 0 16px}
+.fx-extremes{gap:10px}.fx-extremes>div{border:1px solid #e3ecf6;border-radius:15px;background:#f8fbff;padding:14px}.fx-extremes strong{font-size:19px;color:#1c3f63;letter-spacing:-.4px}.fx-extremes span{font-size:10px;color:#6c859c}
+.fx-date-range{display:flex;justify-content:space-between;padding:10px 0 0;color:#71889e;font-size:10px}.fx-footnote{font-size:10px;line-height:1.8;color:#778da3;border-top:1px solid #edf2f8;padding-top:12px}.fx-close{background:#f1f6fc;color:#52718f}
+@media(max-width:355px){.fx-quote>strong{font-size:36px}.fx-sheet-scroll{padding-left:17px;padding-right:17px}.rate-chart-trigger{min-width:98px}.rate-chart-trigger svg{width:84px!important}.page-intro h1{font-size:29px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+.rate-chart-trigger>div{display:block;width:102px;height:34px;min-width:0}.rate-chart-trigger svg{stroke-width:0}.rate-chart-trigger svg path{stroke-width:2}
+
+/* Date-inspectable daily bodies and weekly candles from actual published fixings. */
+.fx-chart-mount:has(.rate-candle-view){padding:0;margin:10px 0 0;width:100%;background:transparent;border-radius:0;overflow:visible;min-height:0!important}.rate-candle-view{width:100%}.candle-modes{display:flex;gap:5px;border:1px solid #e1eaf5;border-radius:11px;padding:3px;background:#f7faff;margin:0 0 13px}.candle-modes button{flex:1;border:0;border-radius:8px;background:transparent;color:#6b829a;min-height:35px;font-size:11px;font-weight:650}.candle-modes button[aria-pressed=true]{background:#173f67;color:#fff;box-shadow:0 2px 6px #17365312}.candle-readout{display:flex;flex-direction:column;gap:5px;background:#eef6ff;border:1px solid #dbeafa;border-radius:14px;padding:13px 15px;margin-bottom:12px;font-variant-numeric:tabular-nums}.candle-readout time{font-size:11px;font-weight:700;color:#426f99}.candle-readout strong{font-size:25px;letter-spacing:-.7px;color:#153b61}.candle-readout strong small{font-size:11px;color:#718aa0;font-weight:500}.candle-readout>span{font-size:11px;color:#426b93}.candle-readout>small{font-size:9px;color:#7b90a4}.candle-legend{display:flex;align-items:center;gap:12px;margin-bottom:5px;font-size:10px;color:#5b7591}.candle-legend>span{display:flex;gap:4px;align-items:center}.candle-legend i{width:7px;height:12px;border-radius:2px}.candle-legend .rise{background:#FDED80;box-shadow:inset 0 0 0 1px #b89a32}.candle-legend .fall{background:#0575e6}.candle-legend>small{margin-left:auto;color:#8295a8}.fx-chart-mount .rate-candle-view svg{height:254px!important;width:100%!important;stroke:none}.fx-chart-mount .rate-candle-view svg text{font-family:inherit}.candle-date-slider{display:flex;align-items:center;gap:12px;font-size:10px;color:#567594;padding:12px 0;margin:0}.candle-date-slider span{white-space:nowrap}.candle-date-slider input{flex:1;width:100%;min-width:0;min-height:30px;accent-color:#0575e6;padding:0;border:0}.candle-method{font-size:10px;line-height:1.8;color:#74899e;padding:9px 0 12px;margin:0}.weekly-fixing-summary{padding:13px;border:1px solid #e0eaf6;border-radius:14px;background:#f4f8fe;margin-bottom:12px}.weekly-fixing-summary>time{font-size:11px;color:#4b6f92}.weekly-fixing-summary>div{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.weekly-fixing-summary span{font-size:10px;color:#71869a;display:flex;flex-direction:column;gap:4px}.weekly-fixing-summary b{font-size:15px;font-weight:700;color:#234b72;font-variant-numeric:tabular-nums}.fx-chart-mount svg line{shape-rendering:geometricPrecision}
+
+/* Avoid duplicate quotes; keep the selected fixing readable beside the plot. */
+.fx-sheet-scroll:has(.rate-candle-view) .fx-quote{margin:8px 0 0;padding:0}.fx-sheet-scroll:has(.rate-candle-view) .fx-quote>strong,.fx-sheet-scroll:has(.rate-candle-view) .fx-quote>time{display:none}.fx-sheet-scroll:has(.rate-candle-view) .fx-change{margin:7px 0 11px}.candle-readout{position:relative;padding:10px 12px;gap:3px;box-shadow:0 3px 8px #17365306}.candle-readout strong{font-size:23px}.candle-readout time{font-size:10px}.candle-readout>span{font-size:10px}.candle-readout>small{font-size:9px}.candle-modes{margin-bottom:9px}.candle-method{font-size:9px}
+
+.candle-date-slider input{min-height:44px}.candle-readout{background:#eef6ff}.fx-chart-mount .rate-day-svg text{font-size:10px}

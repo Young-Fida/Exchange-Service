@@ -1,4 +1,5 @@
 node_modules/
+.pnpm-store/
 *.tar.gz
 *.zip
 qa-*.png

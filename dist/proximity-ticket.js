@@ -15,7 +15,7 @@ window.PickupTicket=(()=>{
   if(!Number.isFinite(fix.accuracy)||fix.accuracy<0||fix.accuracy>20)return {unlocked:false,reason:'inaccurate',metres:null};
   const metres=distance(target,fix);return {unlocked:metres<=30,reason:metres<=30?'arrived':'outside',metres};
  }
- function attach({root,request,language,t,distance,onCopy}){
+ function attach({root,request,language,t,distance,onCopy,onState}){
   const index=['ko','en','ja','zh-CN','zh-TW'].indexOf(language),w=k=>words[k][index<0?1:index];
   let target=request.atmTarget||null,fix=null,denied=false,watch,dialog,key='',disposed=false;
   const el=(tag,cls,text)=>{const n=document.createElement(tag);n.className=cls||'';if(text)n.textContent=text;return n;};
@@ -24,7 +24,7 @@ window.PickupTicket=(()=>{
   function render(){
    const state=gate(target,fix,Date.now(),distance,!document.hidden),expired=request.expires<=Date.now();
    const next=[expired?'expired':state.reason,target?.id||'',state.metres===null?'':Math.ceil(state.metres),denied].join('|');
-   if(next===key)return;key=next;dialog?.close();dialog?.remove();dialog=null;ticket.replaceChildren();
+   if(next===key)return;key=next;onState?.({unlocked:state.unlocked&&!expired,reason:expired?'expired':state.reason});dialog?.close();dialog?.remove();dialog=null;ticket.replaceChildren();
    ticket.classList.toggle('is-unlocked',state.unlocked&&!expired);
    if(!state.unlocked||expired){
     ticket.append(el('span','proximity-lock','⌖'));const body=el('div','proximity-copy');

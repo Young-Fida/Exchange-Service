@@ -1,1 +1,20 @@
-{"name":"qr-exchange-prototype","private":true,"scripts":{"dev":"node server.mjs","check":"node --check dist/app.js"}}
+{
+  "name": "qr-exchange-prototype",
+  "private": true,
+  "scripts": {
+    "dev": "node server.mjs",
+    "check": "node --check dist/app.js",
+    "build:chart": "node build-chart.cjs"
+  },
+  "dependencies": {
+    "@astryxdesign/core": "0.7.13",
+    "@astryxdesign/theme-neutral": "0.7.13",
+    "@stylexjs/stylex": "0.19.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "ztd-charts": "0.8.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}
