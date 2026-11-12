@@ -34,8 +34,8 @@ Object.assign(words,{
  travelCompanion:['여행을 함께하는 QR 환전','QR TRAVEL COMPANION','旅のQRパートナー','旅行QR助手','旅行QR助手'],
  googleDataNote:['일부 장소명은 제공된 원문으로 표시될 수 있어요.','Some place names may appear in their original language.','一部の施設名は原文で表示される場合があります。','部分地点名称可能显示原文。','部分地點名稱可能顯示原文。']
 });
-const rates={KRW:1,USD:1400,JPY:9.3,CNY:195,TWD:43,EUR:1510,GBP:1800,HKD:180,SGD:1040,AUD:920,CAD:1020,CHF:1590,THB:40,VND:0.055,MYR:315,IDR:0.089,PHP:24,INR:16.5,NZD:840};
-const currencyCodes=[...new Set(['USD','JPY','CNY','TWD','EUR','KRW','GBP',...(typeof Intl.supportedValuesOf==='function'?Intl.supportedValuesOf('currency'):Object.keys(rates))])];
+const rates={KRW:1};
+const currencyCodes=[...new Set(['USD','JPY','CNH','CNY','TWD','EUR','KRW','GBP',...(typeof Intl.supportedValuesOf==='function'?Intl.supportedValuesOf('currency'):Object.keys(rates))])];
 const customRates={};
 function rateFor(c){return rates[c]??customRates[c];}
 function ratePair(){const a=rateFor(state.draft.currency),b=rateFor(state.draft.toCurrency);return state.draft.currency===state.draft.toCurrency?1:(a>0&&b>0?a/b:null);}
@@ -69,6 +69,11 @@ function detectBrowserLanguage(tags){
  if(tag==='zh'||tag.startsWith('zh-'))return /(?:^|-)(?:hant|tw|hk|mo)(?:-|$)/.test(tag)?'zh-TW':'zh-CN';
  return 'en';
 }
+Object.assign(words,{
+ sampleRate:['고시 기준율','Published rate','公表基準レート','公布基准汇率','公布基準匯率'],
+ quoteNote:['고시 기준 예상액입니다. 수수료는 포함되지 않으며 실제 거래 환율과 다를 수 있어요.','Estimate at published rates, excluding fees. Transaction rates may differ.','公表値による目安です。手数料を含まず、取引レートと異なる場合があります。','按公布汇率估算，不含手续费，实际交易汇率可能不同。','依公布匯率估算，不含手續費，實際交易匯率可能不同。'],
+ rateMissing:['이 통화 조합의 고시 환율이 제공되지 않아요.','No published rate for this currency pair.','この通貨ペアの公表レートはありません。','暂无此币种组合的公布汇率。','暫無此幣別組合的公布匯率。']
+});
 let language=detectBrowserLanguage(navigator.languages?.length?navigator.languages:[navigator.language]);try{const saved=localStorage.getItem('qr-exchange-language');if(locales.includes(saved))language=saved;}catch{}
 Object.assign(words,{"toyOpen":["만원권을 눌러 세계를 펼쳐보세요.","Tap the won note. Unfold the world.","ウォン紙幣を押して、世界を広げよう。","轻点韩元纸币，展开世界。","輕點韓元紙鈔，展開世界。"],"toyReady":["지도를 누르면 환전을 시작해요.","Tap the map to start your exchange.","地図を押すと両替が始まります。","轻点地图，开始换汇。","輕點地圖，開始換匯。"],"toyOpening":["한국에서 세계로, 쭈욱!","From Korea to the world.","韓国から世界へ、ぱっと！","从韩国，展开世界！","從韓國，展開世界！"],"toyReplay":["다시 보기","Replay","もう一度","重播","重播"]});
 const state={draft:{currency:'USD',toCurrency:'KRW',amount:'100',area:'haeundae',name:''},request:null,selected:0,navigating:false,mapZoom:1,mapArea:null,flowActive:false,allowedRoute:null,renderedPage:null,loadingTarget:'apply',loadingTimers:[],paperStop:null,codeInterval:null,toastTimer:null};
@@ -98,7 +103,7 @@ rateEmpty:['최근 7일의 조회 가능한 환율이 없어요.','No rates foun
 rateRetry:['다시 조회','Retry','再取得','重新查询','重新查詢'],
 rateDate:['환율 기준일','Rate date','レート基準日','汇率基准日','匯率基準日'],
 rateSource:['한국수출입은행 · 매매기준율','Export-Import Bank of Korea · Base rates','韓国輸出入銀行・売買基準率','韩国进出口银行 · 基准汇率','韓國進出口銀行 · 基準匯率'],
-rateNotice:['공시된 기준일의 참고 환율입니다. 초 단위 실시간 시세나 실제 거래 적용 환율이 아니며, 환전 예상금액은 기존 시연용 계산입니다.','Published reference rates, not tick-by-tick prices or transaction quotes. The exchange estimate still uses demo rates.','公表日の参考レートです。リアルタイム相場・取引レートではありません。両替見積りはデモ値です。','所示为基准日参考汇率，并非逐秒行情或交易报价。换汇预估仍使用演示汇率。','所示為基準日參考匯率，並非逐秒行情或交易報價。換匯預估仍使用展示匯率。'],
+rateNotice:['공시된 기준일의 참고 환율입니다. 초 단위 실시간 시세나 실제 거래 적용 환율이 아니며, 예상금액은 이 기준율로 계산하며 수수료는 제외됩니다.','Published reference rates, not tick-by-tick prices or transaction quotes. The estimate uses these rates and excludes fees.','公表日の参考レートです。リアルタイム相場・取引レートではありません。換算額はこの基準値を使用し、手数料を含みません。','所示为基准日参考汇率，并非逐秒行情或交易报价。换汇预估使用此基准汇率，不含手续费。','所示為基準日參考匯率，並非逐秒行情或交易報價。換匯預估使用此基準匯率，不含手續費。'],
 rateUnsupported:['미제공','Not provided','提供なし','未提供','未提供'],
 rateYuan:['중국 · 역외 위안 CNH','China · Offshore yuan CNH','中国・オフショア人民元 CNH','中国 · 离岸人民币 CNH','中國 · 離岸人民幣 CNH']
 });
@@ -113,14 +118,17 @@ function ratesPanel(){
 }
 document.querySelector('#rates-content').addEventListener('click',event=>{const button=event.target.closest('[data-rate-chart]');if(button)window.openRateChart({currency:button.dataset.rateChart,language});});
 function drawRates(){document.querySelector('#rates-content').innerHTML=ratesPanel();window.mountRateSparklines?.(document.querySelector('#rates-content'),language);document.querySelector('#retry-rates')?.addEventListener('click',loadLiveRates);}
+let exchangeRateCache=null,exchangeRateJob=null;
+window.getExchangeRates=async function(){
+ if(exchangeRateCache&&Date.now()-exchangeRateCache.at<600000)return exchangeRateCache.data;
+ if(!exchangeRateJob)exchangeRateJob=(async()=>{const response=await fetch('/api/rates',{headers:{Accept:'application/json'},signal:AbortSignal.timeout(22000)});const data=await response.json();if(!response.ok||!Array.isArray(data.rates)||!data.rateDate)throw Error('RATES_UNAVAILABLE');exchangeRateCache={at:Date.now(),data};return data;})().finally(()=>exchangeRateJob=null);
+ return exchangeRateJob;
+};
 async function loadLiveRates(){
  if(liveRateState.loading)return;
  liveRateState.loading=true;liveRateState.error=null;drawRates();
  try{
-  const response=await fetch('/api/rates',{headers:{Accept:'application/json'},signal:AbortSignal.timeout(22000)});
-  const data=await response.json();
-  if(!response.ok)throw new Error(data.error||'RATES_UNAVAILABLE');
-  if(!Array.isArray(data.rates)||!data.rateDate||!data.fetchedAt)throw new Error('RATES_UNAVAILABLE');
+  const data=await window.getExchangeRates();
   liveRateState.data=data;
  }catch(error){liveRateState.data=null;liveRateState.error=error.message;}
  finally{liveRateState.loading=false;drawRates();}
@@ -137,7 +145,7 @@ function render(options={}){clearTimers();updateStatic();const page=route();cons
 function wireForm(){
  const options=currencyCodes.map(value=>({value,label:currencyCountry(value)+' · '+value}));
  const priority=['USD','JPY','CNY','TWD','EUR'];options.sort((a,b)=>{const x=priority.indexOf(a.value),y=priority.indexOf(b.value);return (x<0?999:x)-(y<0?999:y);});
- state.applicationStop=window.mountExchangeApplication(document.querySelector('#exchange-application'),{language,draft:{...state.draft},rates,custom:{...customRates},options,t,format:formatMoney,onDraft:d=>{state.draft={...d};},onCustom:(currency,value)=>{if(value)customRates[currency]=value;else delete customRates[currency];},onRates:()=>{ratesDialog.showModal();loadLiveRates();},onSubmit:(d,pair)=>{state.draft={...d};const n=Number(d.amount);state.request={currency:d.currency,toCurrency:d.toCurrency,amount:n,area:d.area,received:Number((n*pair).toFixed(2)),won:Math.round(n*pair),code:'482917',expires:0};state.selected=0;state.mapArea=d.area;state.navigating=false;state.mapZoom=1;beginLoading('code');}});
+ state.applicationStop=window.mountExchangeApplication(document.querySelector('#exchange-application'),{language,draft:{...state.draft},rates,loadRates:window.getExchangeRates,custom:{...customRates},options,t,format:formatMoney,onDraft:d=>{state.draft={...d};},onCustom:(currency,value)=>{if(value)customRates[currency]=value;else delete customRates[currency];},onRates:()=>{ratesDialog.showModal();loadLiveRates();},onSubmit:(d,pair)=>{state.draft={...d};const n=Number(d.amount);state.request={currency:d.currency,toCurrency:d.toCurrency,amount:n,area:d.area,received:Number((n*pair).toFixed(2)),won:Math.round(n*pair),code:'482917',expires:0};state.selected=0;state.mapArea=d.area;state.navigating=false;state.mapZoom=1;beginLoading('code');}});
 }
 function renderRateInputs(){const area=document.querySelector('#custom-rates');const missing=state.draft.currency===state.draft.toCurrency?[]:[...new Set([state.draft.currency,state.draft.toCurrency])].filter(c=>!(c in rates));area.hidden=missing.length===0;area.innerHTML=missing.length?'<h3>'+t('customRate')+'</h3><p>'+t('rateHelp')+'</p>'+missing.map(c=>'<label>'+c+' · '+t('rateBase')+'<input type="number" inputmode="decimal" min="0.000001" step="any" data-custom-rate="'+c+'" value="'+(customRates[c]||'')+'" placeholder="1 '+c+' = ? KRW"></label>').join(''):'';}
 function readDraft(){if(document.querySelector('.astryx-exchange-form'))return;if(!document.querySelector('#apply-form'))return;state.draft.currency=document.querySelector('#currency').value;state.draft.toCurrency=document.querySelector('#receive-currency').value;state.draft.amount=document.querySelector('#give-amount').value;}
