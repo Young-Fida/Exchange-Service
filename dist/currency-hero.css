@@ -1,0 +1,58 @@
+.currency-hero{margin:4px 0 30px;isolation:isolate}.currency-art{display:block;position:relative;width:100%;height:330px;padding:0;border:0;background:transparent;cursor:pointer;isolation:isolate;overflow:hidden;border-radius:24px;-webkit-tap-highlight-color:transparent}.currency-art:hover{background:transparent}.currency-art:focus-visible{outline:2px solid #0575e6;outline-offset:4px}.currency-orbit{position:absolute;inset:3% -9% 0;background:radial-gradient(ellipse at 52% 52%,#d5eaff 0,#edf6ff80 43%,#fff0 70%);z-index:-1}.currency-plate{position:absolute;left:5%;top:22%;width:90%;aspect-ratio:2.2;display:block;transform:rotate(-13deg);border-radius:3px;background:#e6eff1;box-shadow:0 1px 0 #fff,0 2px 0 #bbcad7,0 4px 0 #f9fcff,0 6px 0 #cbd6dd,0 28px 32px -13px #163c673a;transition:transform .35s ease,box-shadow .35s ease;overflow:hidden}.note-engraving,.note-developed{position:absolute;inset:0;background:url('assets/krw-collage-v11/10000-scan-front.jpg') center/100% 100% no-repeat}.note-engraving{filter:grayscale(1) contrast(.65);opacity:.2;mix-blend-mode:multiply}.note-developed{clip-path:inset(0 100% 0 0);animation:note-develop 2.4s cubic-bezier(.35,0,.25,1) .25s forwards}.note-light{position:absolute;inset:-20% auto -20% -8%;width:8%;background:linear-gradient(90deg,#fff0,#fded8080 30%,#fffffff0 55%,#fff0);filter:blur(3px);transform:skewX(-8deg);animation:note-sweep 2.4s cubic-bezier(.35,0,.25,1) .25s both;pointer-events:none}.currency-ground{position:absolute;left:14%;right:12%;bottom:20%;height:14px;border-radius:50%;background:#153f6c12;filter:blur(9px);transform:rotate(-5deg)}.currency-art:hover .currency-plate{transform:rotate(-10deg) translateY(-4px)}.currency-art:active .currency-plate{transform:rotate(-10deg) translateY(2px) scale(.985);box-shadow:0 1px 0 #fff,0 3px 0 #cbd6dd,0 12px 18px -10px #163c6738}.currency-hero .toy-start{margin-top:-16px;position:relative;z-index:2}.currency-hero+.globe-guide-heading{margin-top:22px}@keyframes note-develop{to{clip-path:inset(0 0 0 0)}}@keyframes note-sweep{0%{left:-8%;opacity:0}8%{opacity:1}92%{opacity:1}100%{left:103%;opacity:0}}@media(max-height:740px){.currency-art{height:280px}}@media(max-width:355px){.currency-art{height:260px}.currency-plate{top:25%}}@media(prefers-reduced-motion:reduce){.note-developed{animation:none;clip-path:none}.note-light{display:none}.currency-plate{transition:none}}
+
+/* Blank paper is idle; only an explicit press develops the banknote. */
+.currency-plate{background:linear-gradient(125deg,#fffef9,#f2f0e8);border:1px solid #d9dfe3}.note-engraving{display:none}.note-developed{animation:none;clip-path:inset(0 100% 0 0)}.note-light{animation:none;opacity:0}.is-revealing .note-developed{animation:note-develop 1.3s cubic-bezier(.35,0,.25,1) .08s forwards}.is-revealing .note-light{animation:note-sweep 1.3s cubic-bezier(.35,0,.25,1) .08s both}.currency-art:disabled{cursor:default;opacity:1}.is-revealing .currency-plate{transform:rotate(-10deg);transition:transform .4s}.currency-hero .toy-start:disabled{opacity:1;cursor:default}@media(prefers-reduced-motion:reduce){.note-developed{clip-path:inset(0 100% 0 0)}.is-revealing .note-developed{animation:none;clip-path:none}}
+
+/* Original brand paper, replaced by the real note under the same light pass. */
+.note-brand{position:absolute;inset:0;overflow:hidden;background:linear-gradient(125deg,#fff 0%,#f0f7ff 65%,#d5e9ff 100%);border:5px solid #fff;box-shadow:inset 0 0 0 1px #0575e62a;clip-path:inset(0 0 0 0)}
+.note-brand:before{content:'';position:absolute;left:4%;right:4%;top:9%;bottom:9%;border:1px solid #0575e62c;border-radius:50%}
+.note-brand:after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(113deg,transparent 0 4px,#0575e606 4px 5px);pointer-events:none}
+.note-brand-word{position:absolute;left:8%;top:35%;font-family:Georgia,'Times New Roman',serif;font-size:clamp(30px,8vw,46px);font-weight:400;letter-spacing:-2px;color:#0575E6;line-height:1;z-index:2}
+.note-brand-orbit{position:absolute;width:60%;aspect-ratio:1;right:-17%;top:-34%;border:20px solid #0575E6;border-radius:50%;box-shadow:0 0 0 7px #fff,0 0 0 9px #0575e62b}
+.note-brand-lines{position:absolute;right:16%;top:-20%;height:150%;width:22%;border-left:1px solid #0575e629;border-right:1px solid #0575e629;transform:rotate(25deg);background:repeating-linear-gradient(90deg,transparent 0 5px,#0575e612 5px 6px)}
+.note-brand-seal{position:absolute;right:10%;top:34%;width:16%;aspect-ratio:1;display:grid;place-items:center;border-radius:50%;background:#FDED80;box-shadow:0 0 0 4px #ffffffc7,0 0 0 5px #0575e61f;color:#0575E6;font-size:30px;line-height:1;z-index:2}
+.is-revealing .note-brand{animation:brand-clear 1.3s cubic-bezier(.35,0,.25,1) .08s forwards}
+@keyframes brand-clear{to{clip-path:inset(0 0 0 100%)}}
+@media(prefers-reduced-motion:reduce){.is-revealing .note-brand{animation:none;visibility:hidden}}
+
+/* Reserve separate wordmark and ornament areas across all supported languages. */
+.currency-plate{transform:rotate(-5deg)}
+.currency-art:hover .currency-plate{transform:rotate(-3deg) translateY(-3px)}
+.currency-art:active .currency-plate{transform:rotate(-3deg) translateY(2px) scale(.985)}
+.is-revealing .currency-plate{transform:rotate(-3deg)}
+.note-brand-word{left:7%;right:29%;top:0;height:100%;display:flex;align-items:center;font-size:clamp(25px,7vw,38px);letter-spacing:-1.2px;white-space:nowrap}
+.note-brand-word:lang(ko),.note-brand-word:lang(ja),.note-brand-word:lang(zh-CN),.note-brand-word:lang(zh-TW){font-family:Inter,'Noto Sans KR',Arial,sans-serif;font-weight:600;letter-spacing:1px;font-size:36px}
+.note-brand-orbit{width:43%;right:-21%;top:-15%;border-width:15px}
+.note-brand-lines{right:5%;width:14%;opacity:.7}
+.note-brand-seal{right:7%;top:36%;width:13%;font-size:25px}
+@media(max-width:355px){.note-brand-word{font-size:29px}.note-brand-word:lang(ko),.note-brand-word:lang(ja),.note-brand-word:lang(zh-CN),.note-brand-word:lang(zh-TW){font-size:31px}}
+
+/* Language-specific typesetting: wide Latin wordmark vs compact CJK lettering. */
+.note-brand{container-type:inline-size}
+.note-brand-word{font-size:11cqw;left:7%;right:25%;letter-spacing:-.045em;line-height:1.1}
+.note-brand-word:lang(en){font-family:Georgia,'Times New Roman',serif;font-size:11cqw;font-weight:400;letter-spacing:-.045em}
+.note-brand-word:lang(ko){left:10%;right:34%;justify-content:center;font-family:'Noto Sans KR',Arial,sans-serif;font-size:17cqw;font-weight:600;letter-spacing:.12em;text-indent:.12em}
+.note-brand-word:lang(ja){left:10%;right:34%;justify-content:center;font-family:'Yu Mincho','Hiragino Mincho ProN',serif;font-size:17cqw;font-weight:500;letter-spacing:.15em;text-indent:.15em}
+.note-brand-word:lang(zh-CN){left:10%;right:34%;justify-content:center;font-family:'Microsoft YaHei','PingFang SC',sans-serif;font-size:17cqw;font-weight:500;letter-spacing:.13em;text-indent:.13em}
+.note-brand-word:lang(zh-TW){left:10%;right:34%;justify-content:center;font-family:'Microsoft JhengHei','PingFang TC',sans-serif;font-size:17cqw;font-weight:500;letter-spacing:.1em;text-indent:.1em}
+.note-brand:has(.note-brand-word:lang(ko)) .note-brand-orbit,.note-brand:has(.note-brand-word:lang(ja)) .note-brand-orbit,.note-brand:has(.note-brand-word:lang(zh-CN)) .note-brand-orbit,.note-brand:has(.note-brand-word:lang(zh-TW)) .note-brand-orbit{width:53%;right:-22%;top:-26%;border-width:17px}
+.note-brand:has(.note-brand-word:lang(ko)) .note-brand-seal,.note-brand:has(.note-brand-word:lang(ja)) .note-brand-seal,.note-brand:has(.note-brand-word:lang(zh-CN)) .note-brand-seal,.note-brand:has(.note-brand-word:lang(zh-TW)) .note-brand-seal{right:9%;top:32%;width:16%;font-size:8cqw}
+.note-brand:has(.note-brand-word:lang(ko)) .note-brand-lines,.note-brand:has(.note-brand-word:lang(ja)) .note-brand-lines,.note-brand:has(.note-brand-word:lang(zh-CN)) .note-brand-lines,.note-brand:has(.note-brand-word:lang(zh-TW)) .note-brand-lines{right:12%;width:19%}
+
+/* Action labels with native UI sans-serif families and compact optical spacing. */
+.note-brand-word:lang(en){left:6%;right:24%;font-size:13cqw}
+.note-brand-word:lang(ko){font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif}
+.note-brand-word:lang(ja){font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Yu Gothic',Meiryo,'Noto Sans JP',sans-serif}
+.note-brand-word:lang(zh-CN){font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif}
+.note-brand-word:lang(zh-TW){font-family:'PingFang TC','Microsoft JhengHei','Noto Sans TC',sans-serif}
+.note-brand-word:lang(ko),.note-brand-word:lang(ja),.note-brand-word:lang(zh-CN),.note-brand-word:lang(zh-TW){left:6%;right:25%;justify-content:flex-start;font-size:14cqw;letter-spacing:-.045em;text-indent:0;font-weight:600;font-synthesis:none}
+.note-brand:has(.note-brand-word) .note-brand-orbit{width:43%;right:-22%;top:-15%;border-width:15px}
+.note-brand:has(.note-brand-word) .note-brand-seal{right:6%;top:36%;width:13%;font-size:7cqw}
+.note-brand:has(.note-brand-word) .note-brand-lines{right:4%;width:13%}
+
+/* Stable left hinge: keep the resting angle, lower the right edge on interaction. */
+.currency-plate{transform-origin:12% 50%;transform:rotate(-5deg);transition:transform 280ms cubic-bezier(.2,0,0,1),box-shadow 280ms cubic-bezier(.2,0,0,1)}
+.currency-art:hover .currency-plate{transform:rotate(-5deg)}
+@media(hover:hover) and (pointer:fine){.currency-art:hover .currency-plate{transform:rotate(-1deg);box-shadow:0 1px 0 #fff,0 2px 0 #bbcad7,0 4px 0 #f9fcff,0 6px 0 #cbd6dd,0 18px 24px -13px #163c672b}}
+.currency-art:active .currency-plate,.is-revealing .currency-plate,.is-revealing .currency-art:hover .currency-plate{transform:rotate(-1deg);box-shadow:0 1px 0 #fff,0 3px 0 #cbd6dd,0 12px 18px -10px #163c672b}
+@media(prefers-reduced-motion:reduce){.currency-plate{transition:none}}
