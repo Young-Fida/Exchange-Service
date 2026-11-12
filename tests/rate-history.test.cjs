@@ -10,3 +10,8 @@ test('failed dates are reported as partial history rather than fabricated points
  const result=await history('USD',7);assert.equal(result.partial,true);assert.equal(result.failedDates,1);assert.equal(result.points.length,6);
  await assert.rejects(history('USD',365),/INVALID_REQUEST/);
 });
+test('90-day history produces at least twelve real weekly candles and shares cached dates',async()=>{
+ const {weeklyCandles}=require('../lib/candle-model.cjs');let calls=0;
+ const history=createHistoryService({now:()=>new Date('2026-11-12T05:00:00Z'),getKey:()=> 'test',fetchImpl:async url=>{calls++;const raw=url.searchParams.get('searchdate'),date=new Date(raw.slice(0,4)+'-'+raw.slice(4,6)+'-'+raw.slice(6,8)+'T00:00:00Z');return {ok:true,json:async()=>[0,6].includes(date.getUTCDay())?[]:[{result:1,cur_unit:'USD',deal_bas_r:String(1300+date.getUTCDate())}]};}});
+ const result=await history('USD',90);assert.equal(calls,90);assert.ok(weeklyCandles(result.points).length>=12);await history('USD',30);assert.equal(calls,90);assert.equal(result.partial,false);
+});

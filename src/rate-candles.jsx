@@ -14,9 +14,9 @@ export function MiniRateCandles({points}){
  const lo=Math.min(...values),hi=Math.max(...values),span=Math.max(hi-lo,hi*.001),y=value=>3+(hi-value)/span*27,step=98/rows.length;
  return <svg viewBox="0 0 102 34" width="102" height="34" aria-hidden="true">{rows.map((p,i)=>{const start=p.previous??p.rate,up=p.delta!==null&&p.delta>=0;return <rect key={p.date} x={2+step*(i+.22)} y={y(Math.max(p.rate,start))} width={Math.min(11,step*.56)} height={Math.max(2,Math.abs(y(p.rate)-y(start)))} rx="1" fill={p.delta===null?'#93a9bf':up?'#FDED80':'#0575e6'}/>;})}</svg>;
 }
-export function RateCandleView({points,language,width}){
+export function RateCandleView({points,language,width,mode,onModeChange}){
  const ix=Math.max(0,['ko','en','ja','zh-CN','zh-TW'].indexOf(language)),t=k=>words[k][ix];
- const daily=dailyBodies(points),weeks=weeklyCandles(points);const [mode,setMode]=useState('daily'),[selected,setSelected]=useState(null),[week,setWeek]=useState(null);
+ const daily=dailyBodies(points),weeks=weeklyCandles(points);const [selected,setSelected]=useState(null),[week,setWeek]=useState(null);
  const pos=Math.max(0,Math.min(daily.length-1,selected??daily.length-1)),picked=daily[pos],pickedWeek=weeks[week??weeks.length-1];
  const fmt=n=>new Intl.NumberFormat(language,{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
  if(!picked)return null;
@@ -24,7 +24,7 @@ export function RateCandleView({points,language,width}){
  const values=daily.flatMap(p=>p.previous===null?[p.rate]:[p.rate,p.previous]);const low=Math.min(...values),high=Math.max(...values),pad=Math.max((high-low)*.18,high*.001),min=low-pad,max=high+pad;
  const y=n=>T+(max-n)/(max-min)*(H-T-B),x=i=>L+step*(i+.5),short=date=>new Intl.DateTimeFormat(language,{month:'numeric',day:'numeric',timeZone:'UTC'}).format(new Date(date+'T00:00:00Z'));
  const selectPointer=event=>{const rect=event.currentTarget.getBoundingClientRect();const px=(event.clientX-rect.left)*W/rect.width;setSelected(Math.max(0,Math.min(daily.length-1,Math.floor((px-L)/step))));};
- return <section className="rate-candle-view"><div className="candle-modes">{['daily','weekly'].map(value=><button key={value} type="button" aria-pressed={mode===value} onClick={()=>setMode(value)}>{t(value)}</button>)}</div>
+ return <section className="rate-candle-view"><div className="candle-modes">{['daily','weekly'].map(value=><button key={value} type="button" aria-pressed={mode===value} onClick={()=>onModeChange(value)}>{t(value)}</button>)}</div>
  {mode==='daily'?<><div className="candle-readout" aria-live="polite"><time>{picked.date}</time><strong>{fmt(picked.rate)} <small>KRW</small></strong><span>{picked.delta===null?t('none'):(picked.delta>0?'+':'')+fmt(picked.delta)+' ('+(picked.delta>0?'+':'')+(picked.delta/picked.previous*100).toFixed(2)+'%) · '+t('previous')}</span>{picked.previousDate&&<small>{picked.previousDate} → {picked.date}</small>}</div>
  <div className="candle-legend"><span><i className="rise"/>{t('rise')}</span><span><i className="fall"/>{t('fall')}</span><small>KRW</small></div>
  <svg className="rate-day-svg" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t('daily')+' · '+picked.date+' · '+fmt(picked.rate)+' KRW'} onPointerMove={selectPointer} onPointerDown={event=>{selectPointer(event);event.currentTarget.setPointerCapture(event.pointerId);}} style={{touchAction:'pan-y'}}>
