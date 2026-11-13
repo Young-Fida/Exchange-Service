@@ -17,12 +17,12 @@ function setup(){
  vm.createContext(scope);vm.runInContext(fs.readFileSync(require.resolve('../dist/proximity-ticket.js'),'utf8'),scope);
  return {api:scope.window.PickupTicket,scope,Element,fix:p=>callback(p),fresh:p=>freshCallback(p),tick:()=>tick(),visibility:()=>visibility(),encoded:()=>encoded};
 }
-test('30 m gate requires an explicit target, recent fix and useful GPS accuracy',()=>{
+test('30 m gate requires an explicit target and recent valid coordinates; accuracy is advisory',()=>{
  const {api}=setup();const target={lat:35,lng:129};const fix={lat:35,lng:129,accuracy:5,timestamp:100000};
  assert.equal(api.gate(null,fix,100000,()=>0).unlocked,false);
  assert.equal(api.gate(target,fix,100000,()=>30).unlocked,true);
  assert.equal(api.gate(target,fix,100000,()=>30.01).unlocked,false);
- assert.equal(api.gate(target,{...fix,accuracy:21},100000,()=>0).unlocked,false);
+ assert.equal(api.gate(target,{...fix,accuracy:35},100000,()=>20).unlocked,true);
  assert.equal(api.gate(target,fix,115001,()=>0).unlocked,false);
  assert.equal(api.gate(target,fix,100000,()=>0,false).unlocked,false);
 });
@@ -41,7 +41,8 @@ test('QR is not generated before arrival and is removed again after leaving or c
  ticket.select({id:'b',name:'ATM B',lat:36,lng:130});assert.doesNotMatch(text(root.children[0]),/482 917/);
  assert.ok(states.includes(true));assert.equal(states.at(-1),false);ticket.dispose();
 });
-test('20 m proximity with poor accuracy reports both distance and the blocking accuracy reason',()=>{const {api}=setup();const result=api.gate({lat:35,lng:129},{lat:35,lng:129,accuracy:35,timestamp:100000},100000,()=>20);assert.equal(result.unlocked,false);assert.equal(result.reason,'inaccurate');assert.equal(result.metres,20);});
+test('20 m proximity is unlocked even when reported GPS accuracy exceeds 20 m',()=>{const {api}=setup();const result=api.gate({lat:35,lng:129},{lat:35,lng:129,accuracy:35,timestamp:100000},100000,()=>20);assert.equal(result.unlocked,true);assert.equal(result.reason,'arrived');assert.equal(result.metres,20);});
 test('restored ATM targets restart GPS monitoring and expired requests offer reissue',()=>{const env=setup(),root=new env.Element('main');let renewed=0;const request={code:'482917',expires:Date.now()-1,atmTarget:{id:'a',name:'ATM A',lat:35,lng:129}};const ticket=env.api.attach({root,request,language:'ko',t:k=>k,distance:()=>20,onCopy(){},onReissue(){renewed++;}});env.fix({coords:{latitude:35,longitude:129,accuracy:5},timestamp:Date.now()});assert.equal(env.encoded(),0);const find=n=>n.textContent==='코드 다시 받기'?n:n.children.map(find).find(Boolean);const button=find(root);assert.ok(button);button.onclick();assert.equal(renewed,1);ticket.dispose();});
 test('stale GPS is refreshed automatically and visibility return requests a fresh fix',()=>{const env=setup(),root=new env.Element('main'),request={code:'482917',expires:Date.now()+600000};const ticket=env.api.attach({root,request,language:'ko',t:k=>k,distance:()=>20,onCopy(){}});ticket.select({id:'a',name:'ATM A',lat:35,lng:129});env.fix({coords:{latitude:35,longitude:129,accuracy:5},timestamp:Date.now()-20000});assert.equal(env.encoded(),0);env.tick();env.fresh({coords:{latitude:35,longitude:129,accuracy:5},timestamp:Date.now()});assert.ok(env.encoded()>0);const before=env.encoded();env.visibility();env.fresh({coords:{latitude:35,longitude:129,accuracy:5},timestamp:Date.now()});assert.ok(env.encoded()>before);ticket.dispose();});
 test('small GPS changes inside the arrival radius do not rebuild the QR dialog',()=>{const env=setup(),root=new env.Element('main');let metres=20;const ticket=env.api.attach({root,request:{code:'482917',expires:Date.now()+600000},language:'ko',t:k=>k,distance:()=>metres,onCopy(){}});ticket.select({id:'a',name:'ATM A',lat:35,lng:129});env.fix({coords:{latitude:35,longitude:129,accuracy:5},timestamp:Date.now()});const count=env.encoded();metres=21;env.fix({coords:{latitude:35,longitude:129,accuracy:6},timestamp:Date.now()});assert.equal(env.encoded(),count);ticket.dispose();});
+test('arrival QR can be enlarged and closes again outside the 30 m radius',()=>{const env=setup(),root=new env.Element('main');let metres=20;const stages=[];const ticket=env.api.attach({root,request:{code:'482917',expires:Date.now()+600000},language:'ko',t:k=>k,distance:()=>metres,onCopy(){},onState:state=>stages.push(state.unlocked)});ticket.select({id:'a',name:'ATM A',lat:35,lng:129});env.fix({coords:{latitude:35,longitude:129,accuracy:40},timestamp:Date.now()});const button=ticket.element.children.find(n=>n.className==='ticket-qr');const dialog=root.children.find(n=>n.tag==='dialog');assert.ok(button);button.onclick();assert.equal(dialog.open,true);assert.equal(stages.at(-1),true);metres=31;env.fix({coords:{latitude:35,longitude:129,accuracy:40},timestamp:Date.now()});assert.equal(dialog.open,false);assert.equal(stages.at(-1),false);ticket.dispose();});

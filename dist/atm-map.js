@@ -81,7 +81,7 @@ window.AtmMap=(()=>{
   const el=(name,cls,content)=>{const x=document.createElement(name);if(cls)x.className=cls;if(content)x.textContent=content;return x;};
   root.innerHTML='';
   let flowProgress,flowStep=2,lastPickupUnlocked=false;
-  const pickup=request?window.PickupTicket.attach({root,request,language,t,distance,onCopy,onReissue,onState:state=>{const justArrived=state.unlocked&&!lastPickupUnlocked;lastPickupUnlocked=state.unlocked;flowStep=state.unlocked?3:2;flowProgress?.setStep(flowStep);root.classList.toggle('pickup-arrived',state.unlocked);if(justArrived)requestAnimationFrame(()=>{if(disposed)return;const dock=root.querySelector('.real-map-dock');if(dock)dock.scrollTop=0;pickup.element.scrollIntoView?.({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'nearest'});});}}):null;
+  const pickup=request?window.PickupTicket.attach({root,request,language,t,distance,onCopy,onReissue,onState:state=>{lastPickupUnlocked=state.unlocked;flowStep=state.unlocked?3:2;flowProgress?.setStep(flowStep);root.classList.toggle('pickup-arrived',state.unlocked);requestAnimationFrame(()=>{if(disposed)return;const overlay=root.querySelector('.map-code-overlay'),dock=root.querySelector('.real-map-dock'),anchor=root.querySelector('.real-atm-details');if(!overlay||!dock)return;overlay.hidden=!lastPickupUnlocked;if(lastPickupUnlocked){overlay.append(pickup.element);dock.scrollTop=0;}else dock.insertBefore(pickup.element,anchor);});}}):null;
   const toolbar=el('div','real-map-toolbar'),select=el('select'),locate=el('button','real-location',t('locate'));
   select.setAttribute('aria-label',t('title'));Object.keys(areas).forEach(key=>{const o=el('option','',areas[key].names[i<0?1:i]);o.value=key;select.append(o);});select.value=area||'haeundae';
   if(onBack){const back=el('button','map-back','‹');back.setAttribute('aria-label',t('back'));back.onclick=onBack;toolbar.append(back);}toolbar.append(select,locate);root.append(toolbar);
@@ -90,7 +90,7 @@ window.AtmMap=(()=>{
   const zoom=el('div','real-map-zoom');for(const [symbol,delta,key] of [['+',1,'zoomIn'],['−',-1,'zoomOut']]){const b=el('button','',symbol);b.setAttribute('aria-label',t(key));b.onclick=()=>map&&map.setZoom(map.getZoom()+delta);zoom.append(b);}status.setAttribute('role','status');
   const routingNote=el('p','real-routing-note');routingNote.setAttribute('role','status');
   const dock=el('section','real-map-dock'),heading=el('h1','',t('title')),basis=el('p','real-map-basis',t('area')),details=el('div','real-atm-details'),list=el('div','real-atm-list'),retry=el('button','real-retry',t('retry'));
-  const frame=el('div','real-map-frame');frame.append(canvas,status,zoom);root.append(frame,dock);if(request){const progress=el('div','journey-progress map-flow-progress');dock.append(progress);flowProgress=window.createFlowProgress(progress,{step:flowStep,language});}dock.append(heading,basis);if(pickup)dock.append(pickup.element);dock.append(details,list,retry,consent);
+  const frame=el('div','real-map-frame'),codeOverlay=el('div','map-code-overlay');codeOverlay.hidden=true;frame.append(canvas,status,zoom,codeOverlay);root.append(frame,dock);if(request){const progress=el('div','journey-progress map-flow-progress');dock.append(progress);flowProgress=window.createFlowProgress(progress,{step:flowStep,language});}dock.append(heading,basis);if(pickup)dock.append(pickup.element);dock.append(details,list,retry,consent);
   const credit=el('a','google-places-credit',t('source'));credit.href='https://maps.google.com/';credit.target='_blank';credit.rel='noopener noreferrer';dock.append(credit);
   
   function choose(item,confirmed=false){
@@ -100,8 +100,8 @@ window.AtmMap=(()=>{
    const link=el('a','external-directions',t('directions'));link.href=mapsUrl(item,centre,language);link.target='_blank';link.rel='noopener noreferrer';
    const selectPickup=el('button','button gold select-pickup',t('selectPickup'));selectPickup.onclick=()=>choose(item,true);details.append(selectPickup);
    details.append(el('span','atm-selection-kicker',t('info')),title,meta,el('p','real-walk-summary',walkLabel(item)),start,link,el('small','atm-support-note',t('unsupported')));const warning=el('p','real-walk-warning',t('walkWarning'));if(item.address)meta.textContent=item.address+' · '+meta.textContent;item.attributions?.forEach(a=>{const credit=el('a','google-places-credit',a.provider||'Google Maps');if(a.providerURI&&/^https:\/\//.test(a.providerURI)){credit.href=a.providerURI;credit.target='_blank';credit.rel='noopener noreferrer';}details.append(credit);});
-   list.querySelectorAll('button').forEach((b,n)=>{b.classList.toggle('active',items[n].id===confirmedAtmId);b.setAttribute('aria-pressed',String(items[n].id===item.id));});
-   markers.forEach((m,n)=>{m.content.classList.toggle('selected',items[n].id===item.id);m.zIndex=items[n].id===confirmedAtmId?100:1;});
+   list.querySelectorAll('button').forEach((b,n)=>{b.classList.toggle('active',items[n].id===confirmedAtmId);b.setAttribute('aria-pressed',String(items[n].id===confirmedAtmId));});
+   markers.forEach((m,n)=>{m.content.classList.toggle('selected',items[n].id===confirmedAtmId);m.zIndex=items[n].id===confirmedAtmId?100:1;});
    if(routeLine&&!navItem)routeLine.setMap(null);if(map&&item.walk?.path?.length&&!navItem)routeLine=new google.maps.Polyline({map,path:item.walk.path,strokeColor:'#0575e6',strokeWeight:5,strokeOpacity:.9});
    if(map)map.panTo({lat:item.lat,lng:item.lng});
   }
