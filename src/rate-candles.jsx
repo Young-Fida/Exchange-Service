@@ -2,7 +2,7 @@ import React,{useState} from 'react';
 import {CandlestickChart} from 'ztd-charts';
 import {dailyBodies,weeklyCandles} from '../lib/candle-model.cjs';
 const words={
- daily:['일별 변동봉','Daily change bars','日別変動バー','每日变动柱','每日變動柱'],weekly:['주간 캔들','Weekly candles','週次ローソク足','周蜡烛图','週蠟燭圖'],
+ daily:['일별 · 3개월','Daily · 3 months','日別・3か月','每日 · 3个月','每日 · 3個月'],weekly:['주간 · 6개월','Weekly · 6 months','週次・6か月','每周 · 6个月','每週 · 6個月'],
  date:['날짜 선택','Select date','日付を選択','选择日期','選擇日期'],previous:['직전 고시 대비','Since previous fixing','前回公表値比','较上次公布值','較上次公布值'],none:['직전 고시값 없음','No previous observation','前回の公表値なし','无上次公布值','無上次公布值'],
  rise:['상승','Rise','上昇','上涨','上漲'],fall:['하락','Fall','下落','下跌','下跌'],
  dailyNote:['봉의 양 끝은 직전·당일 고시값입니다. 장중 시가·고가·저가·종가 캔들이 아닙니다.','Each body connects the previous and current fixing, not intraday OHLC.','バーの両端は前回と当日の公表値です。日中OHLCではありません。','柱体两端为上次与当日公布值，并非日内OHLC。','柱體兩端為上次與當日公布值，並非日內OHLC。'],

@@ -25,16 +25,16 @@ const messages={
 };
 function Content({currency,language}){
  const index=['ko','en','ja','zh-CN','zh-TW'].indexOf(language),t=k=>messages[k][index<0?1:index];
- const [mode,setMode]=useState('daily');const [days,setDays]=useState(30),[attempt,setAttempt]=useState(0),[state,setState]=useState({loading:true});const chartRef=useRef(null);const [width,setWidth]=useState(320);
+ const [mode,setMode]=useState('daily');const days=mode==='weekly'?180:90;const [attempt,setAttempt]=useState(0),[state,setState]=useState({loading:true});const chartRef=useRef(null);const [width,setWidth]=useState(320);
  useEffect(()=>{const observer=new ResizeObserver(entries=>setWidth(Math.floor(entries[0].contentRect.width)));observer.observe(chartRef.current);return()=>observer.disconnect();},[]);
  useEffect(()=>{const controller=new AbortController();setState({loading:true});fetch('/api/rate-history?'+new URLSearchParams({currency,days}),{signal:controller.signal}).then(async response=>{const data=await response.json();if(!response.ok)throw Error(data.error);if(!controller.signal.aborted)setState({data});}).catch(error=>{if(error.name!=='AbortError')setState({error:error.message});});return()=>controller.abort();},[currency,days,attempt]);
  const data=state.data,points=data?.points||[],first=points[0],last=points.at(-1),change=last?last.rate-first.rate:0,percent=first?change/first.rate*100:0;
  const fmt=n=>new Intl.NumberFormat(language,{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
  const values=points.map(p=>p.rate),lo=Math.min(...values),hi=Math.max(...values),pad=points.length?Math.max((hi-lo)*.15,hi*.001):1;
  return <><header className="fx-sheet-head"><div><span>{currency} / KRW</span><h2 id="fx-title">{t('title')}</h2></div><button className="fx-close" aria-label="Close" onClick={()=>document.querySelector('#fx-chart-dialog').close()}>×</button></header>
- <div className="fx-sheet-scroll"><p className="fx-source">{t('note')}</p><div className="fx-periods">{(mode==='weekly'?[30,90]:[7,30]).map(n=><Button key={n} className="fx-period-button" variant={days===n?"primary":"ghost"} aria-pressed={days===n} onClick={()=>setDays(n)} label={n===90?['3개월','3M','3か月','3个月','3個月'][index]:n===7?['1주','1W','1週間','1周','1週'][index]:['1개월','1M','1か月','1个月','1個月'][index]}/>)}</div>
+ <div className="fx-sheet-scroll"><p className="fx-source">{t('note')}</p>
  {state.loading?<p className="fx-feedback" role="status">{t('loading')}</p>:state.error?<div className="fx-feedback" role="alert"><p>{t(state.error==='NO_DATA'?'empty':'error')}</p><button onClick={()=>setAttempt(attempt+1)}>{t('retry')}</button></div>:last?<><div className="fx-quote"><span>{data.unit} {currency} → KRW</span><strong>{fmt(last.rate)}<small> KRW</small></strong><time>{last.date}</time></div><div className="fx-change">{points.length>1?<><b>{change>0?'↗':change<0?'↘':'→'} {change>0?'+':''}{fmt(change)} ({percent>0?'+':''}{percent.toFixed(2)}%)</b><span>{t('change')}</span></>:t('one')}</div></>:null}
- <div className="fx-chart-mount" ref={chartRef}>{points.length>0&&<RateCandleView key={currency+days} points={points} language={language} width={width} mode={mode} onModeChange={value=>{setMode(value);setDays(value==='weekly'?90:30);}}/>}</div>
+ <div className="fx-chart-mount" ref={chartRef}>{points.length>0&&<RateCandleView key={currency+days} points={points} language={language} width={width} mode={mode} onModeChange={value=>{setMode(value);}}/>}</div>
  {last&&<><div className="fx-extremes"><div><span>{t('low')}</span><strong>{fmt(lo)}</strong></div><div><span>{t('high')}</span><strong>{fmt(hi)}</strong></div></div><p className="fx-date-range">{first.date} — {last.date}</p></>}{data?.partial&&<p className="fx-partial">{t('partial')}</p>}<p className="fx-footnote">{t('foot')}</p></div></>;
 }
 let mounted;

@@ -52,3 +52,4 @@ test('map configuration does not expose the exchange-rate server secret',()=>{
   handler({method:'GET'},{setHeader(){},end(body){assert.equal(this.statusCode,503);assert.equal(JSON.parse(body).error,'MAP_KEY_NOT_CONFIGURED');}});
  }finally{if(previous===undefined)delete process.env.GOOGLE_MAPS_BROWSER_KEY;else process.env.GOOGLE_MAPS_BROWSER_KEY=previous;}
 });
+test('TMAP IDs are not passed to Google as Google Place IDs',()=>{const url=new URL(scope.window.AtmMap.mapsUrl({lat:35.1,lng:129.1,id:'tmap:123'}));assert.equal(url.searchParams.has('destination_place_id'),false);assert.equal(url.searchParams.get('destination'),'35.1,129.1');});
