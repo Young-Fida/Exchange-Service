@@ -2,6 +2,9 @@
 window.AtmMap=(()=>{
  const areas={"haeundae":{"lat":35.1631,"lng":129.1635,"names":["해운대","Haeundae","海雲台","海云台","海雲臺"]},"gwangalli":{"lat":35.1532,"lng":129.1186,"names":["광안리","Gwangalli","広安里","广安里","廣安里"]},"nampo":{"lat":35.0977,"lng":129.0325,"names":["남포·중구","Nampo · Jung-gu","南浦・中区","南浦·中区","南浦·中區"]},"seomyeon":{"lat":35.1579,"lng":129.0592,"names":["서면·부산진구","Seomyeon · Busanjin-gu","西面・釜山鎮区","西面·釜山镇区","西面·釜山鎮區"]},"busanStation":{"lat":35.1151,"lng":129.0415,"names":["부산역·동구","Busan Station · Dong-gu","釜山駅・東区","釜山站·东区","釜山站·東區"]},"airport":{"lat":35.1796,"lng":128.938,"names":["김해공항","Gimhae Airport","金海空港","金海机场","金海機場"]},"gijang":{"lat":35.2448,"lng":129.2222,"names":["기장","Gijang","機張","机张","機張"]},"osiria":{"lat":35.1962,"lng":129.2083,"names":["오시리아","Osiria","オシリア","奥西利亚","奧西利亞"]},"songjeong":{"lat":35.1808,"lng":129.1994,"names":["송정","Songjeong","松亭","松亭","松亭"]},"centum":{"lat":35.1691,"lng":129.1328,"names":["센텀시티","Centum City","センタムシティ","Centum City","Centum City"]},"yeongdo":{"lat":35.0905,"lng":129.0678,"names":["영도","Yeongdo","影島","影岛","影島"]},"songdo":{"lat":35.0754,"lng":129.0166,"names":["송도·서구","Songdo · Seo-gu","松島・西区","松岛·西区","松島·西區"]},"dongnae":{"lat":35.2056,"lng":129.0785,"names":["동래","Dongnae","東萊","东莱","東萊"]},"geumjeong":{"lat":35.2431,"lng":129.0922,"names":["부산대·금정구","Pusan National University · Geumjeong-gu","釜山大学・金井区","釜山大学·金井区","釜山大學·金井區"]},"sasang":{"lat":35.1629,"lng":128.9847,"names":["사상","Sasang","沙上","沙上","沙上"]},"hadan":{"lat":35.1062,"lng":128.9668,"names":["하단·사하구","Hadan · Saha-gu","下端・沙下区","下端·沙下区","下端·沙下區"]},"dadaepo":{"lat":35.0485,"lng":128.9669,"names":["다대포","Dadaepo","多大浦","多大浦","多大浦"]},"deokcheon":{"lat":35.2101,"lng":129.0053,"names":["덕천·북구","Deokcheon · Buk-gu","徳川・北区","德川·北区","德川·北區"]},"suyeong":{"lat":35.1679,"lng":129.1145,"names":["수영","Suyeong","水営","水营","水營"]},"yeonje":{"lat":35.1861,"lng":129.0812,"names":["연산·연제구","Yeonsan · Yeonje-gu","蓮山・蓮堤区","莲山·莲堤区","蓮山·蓮堤區"]},"daeyeon":{"lat":35.1354,"lng":129.1006,"names":["대연·남구","Daeyeon · Nam-gu","大淵・南区","大渊·南区","大淵·南區"]},"myeongji":{"lat":35.0975,"lng":128.9181,"names":["명지·강서구","Myeongji · Gangseo-gu","鳴旨・江西区","鸣旨·江西区","鳴旨·江西區"]},"busanGangseo":{"lat":35.2121,"lng":128.9805,"names":["대저·강서구청","Daejeo · Gangseo District Office","大渚・江西区庁","大渚·江西区厅","大渚·江西區廳"]}};
  const text={
+  locationRetrying:['위치 재확인 중 · 마지막 확인 위치 기준','Refreshing GPS · Using last confirmed location','位置再確認中・前回確認位置を使用','正在重新定位 · 使用上次确认位置','正在重新定位 · 使用上次確認位置'],
+  codeDistance:['코드 확인 거리 · 직선','Code distance · straight line','コード確認距離・直線','取款码判定距离 · 直线','提款碼判定距離 · 直線'],
+  routeDistance:['도보 경로','Walking route','徒歩ルート','步行路线','步行路線'],
   selectPickup:['이 ATM에서 수령','Collect at this ATM','このATMで受取','选择此ATM取款','選擇此ATM提款'],
   back:['뒤로가기','Back','戻る','返回','返回'],
   departure:['출발점','Starting point','出発地点','出发点','出發點'],
@@ -75,13 +78,13 @@ window.AtmMap=(()=>{
   return sdkPromise;
  }
  function attach({root,language,area,labels,request,onCopy,onBack,onReissue,context,onContextChange}){
-  let disposed=false,map,radar,radarMarker,startMarker,routeLine,watchId,navItem,navGeneration=0,lastRouteAt=0,routeOrigin,markers=[],userMarker,items=[],selected,queryId=0,controller,live=false,walkState='pending',confirmedAtmId=request?.atmTarget?.id||null;
+  let disposed=false,map,radar,radarMarker,startMarker,routeLine,watchId,navItem,navGeneration=0,lastRouteAt=0,routeOrigin,markers=[],userMarker,items=[],selected,queryId=0,controller,live=false,walkState='pending',confirmedAtmId=request?.atmTarget?.id||null,positionFix=null;
   area=context?.area||area;let centre=context?.centre||areas[area]||areas.haeundae;live=Boolean(context?.live);
   const i=['ko','en','ja','zh-CN','zh-TW'].indexOf(language),t=k=>text[k][i<0?1:i];
   const el=(name,cls,content)=>{const x=document.createElement(name);if(cls)x.className=cls;if(content)x.textContent=content;return x;};
   root.innerHTML='';
   let flowProgress,flowStep=2,lastPickupUnlocked=false;
-  const pickup=request?window.PickupTicket.attach({root,request,language,t,distance,onCopy,onReissue,onState:state=>{lastPickupUnlocked=state.unlocked;flowStep=state.unlocked?3:2;flowProgress?.setStep(flowStep);root.classList.toggle('pickup-arrived',state.unlocked);requestAnimationFrame(()=>{if(disposed)return;const overlay=root.querySelector('.map-code-overlay'),dock=root.querySelector('.real-map-dock'),anchor=root.querySelector('.real-atm-details');if(!overlay||!dock)return;overlay.hidden=!lastPickupUnlocked;if(lastPickupUnlocked){overlay.append(pickup.element);dock.scrollTop=0;}else dock.insertBefore(pickup.element,anchor);});}}):null;
+  const pickup=request?window.PickupTicket.attach({root,request,language,t,distance,onCopy,onReissue,onPosition:pos=>{positionFix=pos;if(!pos){updateDistanceSummary();return;}const statusNode=root.querySelector('.real-map-status');if(statusNode?.textContent===t('denied'))statusNode.textContent='';if(userMarker)userMarker.position={lat:pos.coords.latitude,lng:pos.coords.longitude};updateDistanceSummary();},onState:state=>{lastPickupUnlocked=state.unlocked;flowStep=state.unlocked?3:2;flowProgress?.setStep(flowStep);root.classList.toggle('pickup-arrived',state.unlocked);requestAnimationFrame(()=>{if(disposed)return;const overlay=root.querySelector('.map-code-overlay'),dock=root.querySelector('.real-map-dock'),anchor=root.querySelector('.real-atm-details');if(!overlay||!dock)return;overlay.hidden=!lastPickupUnlocked;if(lastPickupUnlocked){overlay.append(pickup.element);dock.scrollTop=0;}else dock.insertBefore(pickup.element,anchor);});}}):null;
   const toolbar=el('div','real-map-toolbar'),select=el('select'),locate=el('button','real-location',t('locate'));
   select.setAttribute('aria-label',t('title'));Object.keys(areas).forEach(key=>{const o=el('option','',areas[key].names[i<0?1:i]);o.value=key;select.append(o);});select.value=area||'haeundae';
   if(onBack){const back=el('button','map-back','‹');back.setAttribute('aria-label',t('back'));back.onclick=onBack;toolbar.append(back);}toolbar.append(select,locate);root.append(toolbar);
@@ -103,8 +106,10 @@ window.AtmMap=(()=>{
    list.querySelectorAll('button').forEach((b,n)=>{b.classList.toggle('active',items[n].id===confirmedAtmId);b.setAttribute('aria-pressed',String(items[n].id===confirmedAtmId));});
    markers.forEach((m,n)=>{m.content.classList.toggle('selected',items[n].id===confirmedAtmId);m.zIndex=items[n].id===confirmedAtmId?100:1;});
    if(routeLine&&!navItem)routeLine.setMap(null);if(map&&item.walk?.path?.length&&!navItem)routeLine=new google.maps.Polyline({map,path:item.walk.path,strokeColor:'#0575e6',strokeWeight:5,strokeOpacity:.9});
-   if(map)map.panTo({lat:item.lat,lng:item.lng});
+   updateDistanceSummary();if(map)map.panTo({lat:item.lat,lng:item.lng});
   }
+  function locationStatus(){return positionFix&&Date.now()-positionFix.timestamp<=60000?t('locationRetrying'):t('denied');}
+  function updateDistanceSummary(){const summary=details.querySelector('.real-walk-summary');if(!summary||!selected)return;const fresh=positionFix&&Date.now()>=positionFix.timestamp&&Date.now()-positionFix.timestamp<=60000;const direct=fresh?Math.ceil(distance(selected,{lat:positionFix.coords.latitude,lng:positionFix.coords.longitude}))+' m':'—';summary.replaceChildren(el('strong','real-code-distance',t('codeDistance')+' '+direct),el('small','real-route-distance',t('routeDistance')+' '+walkLabel(selected)));}
   function walkLabel(item){return item.walk?new Intl.NumberFormat(language,{maximumFractionDigits:1}).format(item.walk.distanceMeters<1000?item.walk.distanceMeters:item.walk.distanceMeters/1000)+(item.walk.distanceMeters<1000?' m':' km')+' · '+Math.max(1,Math.ceil(item.walk.durationMillis/60000))+' '+t('minute'):t('walkUnknown');}
   async function search(){
    onContextChange?.({area:select.value,centre:{lat:centre.lat,lng:centre.lng},live});const id=++queryId;controller?.abort();controller=new AbortController();root.classList.add('is-scanning');stopNavigation();updateRadar();status.textContent=t('loading');routingNote.textContent='';retry.disabled=true;details.replaceChildren();list.replaceChildren();markers.forEach(m=>m.map=null);markers=[];
@@ -129,7 +134,7 @@ window.AtmMap=(()=>{
     items.forEach((p,n)=>{
      const pin=el('span','real-atm-pin');pin.append(el('span','real-pin-number',String(n+1)));
      const marker=new AdvancedMarkerElement({map,position:{lat:p.lat,lng:p.lng},title:p.name,content:pin});marker.addListener('click',()=>choose(p,true));markers.push(marker);
-     const button=el('button','real-atm-option');button.append(el('span','atm-card-rank',String(n+1)),el('strong','atm-card-name',p.name),el('span','atm-card-distance',walkLabel(p)));button.onclick=()=>choose(p,true);list.append(button);
+     const button=el('button','real-atm-option');button.append(el('span','atm-card-rank',String(n+1)),el('strong','atm-card-name',p.name),el('span','atm-card-distance',t('routeDistance')+' '+walkLabel(p)));button.onclick=()=>choose(p,true);list.append(button);
     });
     if(items[0])choose(items[0]);
    }catch(error){if(!disposed&&id===queryId&&error.name!=='AbortError')status.textContent=t('failed');}
@@ -151,12 +156,12 @@ window.AtmMap=(()=>{
     const refresh=async origin=>{
      const response=await fetch('/api/walking-routes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({origin,destinations:[{lat:item.lat,lng:item.lng}]}),signal:controller.signal});
      if(!response.ok)throw Error('ROUTE');const row=(await response.json()).rows?.[0];if(row?.condition!=='ROUTE_EXISTS'||!row.path?.length)throw Error('ROUTE');
-     if(disposed||generation!==navGeneration)throw Error('STALE');item.walk={distanceMeters:row.distanceMeters,durationMillis:row.durationMillis,path:row.path};const summary=details.querySelector('.real-walk-summary');if(summary)summary.textContent=walkLabel(item);routeOrigin=origin;lastRouteAt=Date.now();routeLine?.setMap(null);routeLine=new google.maps.Polyline({map,path:row.path,strokeColor:'#0575e6',strokeWeight:6,strokeOpacity:1});
+     if(disposed||generation!==navGeneration)throw Error('STALE');item.walk={distanceMeters:row.distanceMeters,durationMillis:row.durationMillis,path:row.path};const summary=details.querySelector('.real-walk-summary');if(summary)updateDistanceSummary();routeOrigin=origin;lastRouteAt=Date.now();routeLine?.setMap(null);routeLine=new google.maps.Polyline({map,path:row.path,strokeColor:'#0575e6',strokeWeight:6,strokeOpacity:1});
     };
-    try{await refresh({lat:centre.lat,lng:centre.lng});if(disposed||generation!==navGeneration)return;navItem=item;startMarker=new google.maps.marker.AdvancedMarkerElement({map,position:{lat:centre.lat,lng:centre.lng},content:el('span','departure-flag',t('departure')),title:t('departure'),zIndex:3});userMarker&&(userMarker.map=null);details.querySelector('.real-walk-summary').textContent=walkLabel(item);details.querySelector('.external-directions').href=mapsUrl(item,centre,language);status.textContent=t('tracking');basis.textContent=t('nearby');map.setCenter(centre);map.setZoom(17);button.disabled=false;button.textContent=t('stopWalk');button.onclick=()=>{stopNavigation();status.textContent='';choose(item);};
-     let refreshing=false;watchId=navigator.geolocation.watchPosition(async pos=>{if(disposed||!navItem)return;pickup?.accept(pos);centre={lat:pos.coords.latitude,lng:pos.coords.longitude};updateRadar();map.panTo(centre);if(!refreshing&&Date.now()-lastRouteAt>30000&&distance(routeOrigin,centre)>40){refreshing=true;try{await refresh({lat:centre.lat,lng:centre.lng});status.textContent=t('tracking');}catch{status.textContent=t('navFailed');}finally{refreshing=false;}}},()=>{status.textContent=t('denied');},{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
+    try{await refresh({lat:centre.lat,lng:centre.lng});if(disposed||generation!==navGeneration)return;navItem=item;startMarker=new google.maps.marker.AdvancedMarkerElement({map,position:{lat:centre.lat,lng:centre.lng},content:el('span','departure-flag',t('departure')),title:t('departure'),zIndex:3});userMarker&&(userMarker.map=null);updateDistanceSummary();details.querySelector('.external-directions').href=mapsUrl(item,centre,language);status.textContent=t('tracking');basis.textContent=t('nearby');map.setCenter(centre);map.setZoom(17);button.disabled=false;button.textContent=t('stopWalk');button.onclick=()=>{stopNavigation();status.textContent='';choose(item);};
+     let refreshing=false;watchId=navigator.geolocation.watchPosition(async pos=>{if(disposed||!navItem)return;pickup?.accept(pos);centre={lat:pos.coords.latitude,lng:pos.coords.longitude};updateRadar();map.panTo(centre);if(!refreshing&&Date.now()-lastRouteAt>30000&&distance(routeOrigin,centre)>40){refreshing=true;try{await refresh({lat:centre.lat,lng:centre.lng});status.textContent=t('tracking');}catch{status.textContent=t('navFailed');}finally{refreshing=false;}}},error=>{status.textContent=error?.code===1?t('denied'):locationStatus();},{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
     }catch{if(!disposed){status.textContent=t('navFailed');button.disabled=false;}}
-   },()=>{if(!disposed){button.disabled=false;status.textContent=t('denied');}},{enableHighAccuracy:true,timeout:10000,maximumAge:0});
+   },error=>{if(!disposed){button.disabled=false;status.textContent=error?.code===1?t('denied'):locationStatus();}},{enableHighAccuracy:true,timeout:10000,maximumAge:0});
   }
   async function boot(){
    retry.disabled=true;status.textContent=t('loading');
@@ -171,11 +176,11 @@ window.AtmMap=(()=>{
     if(disposed)return;pickup?.accept(p);pickup?.start();locate.disabled=false;live=true;centre={lat:p.coords.latitude,lng:p.coords.longitude};map.setCenter(centre);
     const {AdvancedMarkerElement}=await google.maps.importLibrary('marker');if(disposed)return;userMarker&&(userMarker.map=null);
     userMarker=new AdvancedMarkerElement({map,position:centre,content:el('span','real-user-pin'),title:t('nearby')});search();
-   },()=>{if(!disposed){locate.disabled=false;status.textContent=t('denied');}},{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
+   },error=>{if(!disposed){locate.disabled=false;status.textContent=error?.code===1?t('denied'):locationStatus();}},{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
   };
   const authError=()=>{if(!disposed)status.textContent=t('mapError');};window.addEventListener('qr-map-auth-error',authError);
-  retry.onclick=()=>map?search():boot();boot();
-  return ()=>{disposed=true;stopNavigation();radar?.setMap(null);radarMarker&&(radarMarker.map=null);pickup?.dispose();flowProgress?.dispose();controller?.abort();window.removeEventListener('qr-map-auth-error',authError);markers.forEach(m=>m.map=null);userMarker&&(userMarker.map=null);};
+  const distanceTimer=setInterval(()=>{if(positionFix&&Date.now()-positionFix.timestamp>60000)updateDistanceSummary();},1000);retry.onclick=()=>map?search():boot();boot();
+  return ()=>{disposed=true;clearInterval(distanceTimer);stopNavigation();radar?.setMap(null);radarMarker&&(radarMarker.map=null);pickup?.dispose();flowProgress?.dispose();controller?.abort();window.removeEventListener('qr-map-auth-error',authError);markers.forEach(m=>m.map=null);userMarker&&(userMarker.map=null);};
  }
  return {attach,distance,mapsUrl,rankWalking,areas,text};
 })();
