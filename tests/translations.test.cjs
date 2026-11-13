@@ -14,5 +14,5 @@ test('all application and live-rate messages have five non-empty translations',(
   for(const value of values)assert.equal(typeof value==='string'&&value.length>0,true,key);
   for(const value of values.slice(1))assert.equal(/[가-힣]/.test(value),false,key);
  }
- for(const required of ['liveRates','rateDate','rateSource','rateUnsupported','rateNotice','leaveDescription','language','applyTitle'])assert.ok(context.catalog[required],required);
+ for(const required of ['liveRates','rateDate','rateSource','rateUnsupported','rateNotice','leaveDescription','language','applyTitle','faqTitle','faqBadge','faqIntro','faqPlan',...Array.from({length:7},(_,i)=>'faqQ'+(i+1)),...Array.from({length:7},(_,i)=>'faqA'+(i+1))])assert.ok(context.catalog[required],required);
 });
