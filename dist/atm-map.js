@@ -2,6 +2,7 @@
 window.AtmMap=(()=>{
  const areas={"haeundae":{"lat":35.1631,"lng":129.1635,"names":["해운대","Haeundae","海雲台","海云台","海雲臺"]},"gwangalli":{"lat":35.1532,"lng":129.1186,"names":["광안리","Gwangalli","広安里","广安里","廣安里"]},"nampo":{"lat":35.0977,"lng":129.0325,"names":["남포·중구","Nampo · Jung-gu","南浦・中区","南浦·中区","南浦·中區"]},"seomyeon":{"lat":35.1579,"lng":129.0592,"names":["서면·부산진구","Seomyeon · Busanjin-gu","西面・釜山鎮区","西面·釜山镇区","西面·釜山鎮區"]},"busanStation":{"lat":35.1151,"lng":129.0415,"names":["부산역·동구","Busan Station · Dong-gu","釜山駅・東区","釜山站·东区","釜山站·東區"]},"airport":{"lat":35.1796,"lng":128.938,"names":["김해공항","Gimhae Airport","金海空港","金海机场","金海機場"]},"gijang":{"lat":35.2448,"lng":129.2222,"names":["기장","Gijang","機張","机张","機張"]},"osiria":{"lat":35.1962,"lng":129.2083,"names":["오시리아","Osiria","オシリア","奥西利亚","奧西利亞"]},"songjeong":{"lat":35.1808,"lng":129.1994,"names":["송정","Songjeong","松亭","松亭","松亭"]},"centum":{"lat":35.1691,"lng":129.1328,"names":["센텀시티","Centum City","センタムシティ","Centum City","Centum City"]},"yeongdo":{"lat":35.0905,"lng":129.0678,"names":["영도","Yeongdo","影島","影岛","影島"]},"songdo":{"lat":35.0754,"lng":129.0166,"names":["송도·서구","Songdo · Seo-gu","松島・西区","松岛·西区","松島·西區"]},"dongnae":{"lat":35.2056,"lng":129.0785,"names":["동래","Dongnae","東萊","东莱","東萊"]},"geumjeong":{"lat":35.2431,"lng":129.0922,"names":["부산대·금정구","Pusan National University · Geumjeong-gu","釜山大学・金井区","釜山大学·金井区","釜山大學·金井區"]},"sasang":{"lat":35.1629,"lng":128.9847,"names":["사상","Sasang","沙上","沙上","沙上"]},"hadan":{"lat":35.1062,"lng":128.9668,"names":["하단·사하구","Hadan · Saha-gu","下端・沙下区","下端·沙下区","下端·沙下區"]},"dadaepo":{"lat":35.0485,"lng":128.9669,"names":["다대포","Dadaepo","多大浦","多大浦","多大浦"]},"deokcheon":{"lat":35.2101,"lng":129.0053,"names":["덕천·북구","Deokcheon · Buk-gu","徳川・北区","德川·北区","德川·北區"]},"suyeong":{"lat":35.1679,"lng":129.1145,"names":["수영","Suyeong","水営","水营","水營"]},"yeonje":{"lat":35.1861,"lng":129.0812,"names":["연산·연제구","Yeonsan · Yeonje-gu","蓮山・蓮堤区","莲山·莲堤区","蓮山·蓮堤區"]},"daeyeon":{"lat":35.1354,"lng":129.1006,"names":["대연·남구","Daeyeon · Nam-gu","大淵・南区","大渊·南区","大淵·南區"]},"myeongji":{"lat":35.0975,"lng":128.9181,"names":["명지·강서구","Myeongji · Gangseo-gu","鳴旨・江西区","鸣旨·江西区","鳴旨·江西區"]},"busanGangseo":{"lat":35.2121,"lng":128.9805,"names":["대저·강서구청","Daejeo · Gangseo District Office","大渚・江西区庁","大渚·江西区厅","大渚·江西區廳"]}};
  const text={
+  selectPickup:['이 ATM에서 수령','Collect at this ATM','このATMで受取','选择此ATM取款','選擇此ATM提款'],
   back:['뒤로가기','Back','戻る','返回','返回'],
   departure:['출발점','Starting point','出発地点','出发点','出發點'],
 
@@ -73,14 +74,14 @@ window.AtmMap=(()=>{
   })().catch(error=>{sdkPromise=null;throw error;});
   return sdkPromise;
  }
- function attach({root,language,area,labels,request,onCopy,onBack,context,onContextChange}){
-  let disposed=false,map,radar,radarMarker,startMarker,routeLine,watchId,navItem,navGeneration=0,lastRouteAt=0,routeOrigin,markers=[],userMarker,items=[],selected,queryId=0,controller,live=false,walkState='pending';
+ function attach({root,language,area,labels,request,onCopy,onBack,onReissue,context,onContextChange}){
+  let disposed=false,map,radar,radarMarker,startMarker,routeLine,watchId,navItem,navGeneration=0,lastRouteAt=0,routeOrigin,markers=[],userMarker,items=[],selected,queryId=0,controller,live=false,walkState='pending',confirmedAtmId=request?.atmTarget?.id||null;
   area=context?.area||area;let centre=context?.centre||areas[area]||areas.haeundae;live=Boolean(context?.live);
   const i=['ko','en','ja','zh-CN','zh-TW'].indexOf(language),t=k=>text[k][i<0?1:i];
   const el=(name,cls,content)=>{const x=document.createElement(name);if(cls)x.className=cls;if(content)x.textContent=content;return x;};
   root.innerHTML='';
-  let flowProgress,flowStep=2;
-  const pickup=request?window.PickupTicket.attach({root,request,language,t,distance,onCopy,onState:state=>{flowStep=state.unlocked?3:2;flowProgress?.setStep(flowStep);}}):null;
+  let flowProgress,flowStep=2,lastPickupUnlocked=false;
+  const pickup=request?window.PickupTicket.attach({root,request,language,t,distance,onCopy,onReissue,onState:state=>{const justArrived=state.unlocked&&!lastPickupUnlocked;lastPickupUnlocked=state.unlocked;flowStep=state.unlocked?3:2;flowProgress?.setStep(flowStep);root.classList.toggle('pickup-arrived',state.unlocked);if(justArrived)requestAnimationFrame(()=>{if(disposed)return;const dock=root.querySelector('.real-map-dock');if(dock)dock.scrollTop=0;pickup.element.scrollIntoView?.({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'nearest'});});}}):null;
   const toolbar=el('div','real-map-toolbar'),select=el('select'),locate=el('button','real-location',t('locate'));
   select.setAttribute('aria-label',t('title'));Object.keys(areas).forEach(key=>{const o=el('option','',areas[key].names[i<0?1:i]);o.value=key;select.append(o);});select.value=area||'haeundae';
   if(onBack){const back=el('button','map-back','‹');back.setAttribute('aria-label',t('back'));back.onclick=onBack;toolbar.append(back);}toolbar.append(select,locate);root.append(toolbar);
@@ -93,13 +94,14 @@ window.AtmMap=(()=>{
   const credit=el('a','google-places-credit',t('source'));credit.href='https://maps.google.com/';credit.target='_blank';credit.rel='noopener noreferrer';dock.append(credit);
   
   function choose(item,confirmed=false){
-   if(confirmed)pickup?.select(item);
+   if(confirmed){confirmedAtmId=item.id;pickup?.select(item);}
    if(navItem&&navItem.id!==item.id){stopNavigation();status.textContent='';}selected=item;details.replaceChildren();const title=el('h2','',item.name),meta=el('p','',item.hours||t('hours')),coords=el('p','real-coordinates',item.lat.toFixed(6)+', '+item.lng.toFixed(6));
    const start=el('button','button gold start-walking',t('startWalk'));start.onclick=()=>startNavigation(item,start);
    const link=el('a','external-directions',t('directions'));link.href=mapsUrl(item,centre,language);link.target='_blank';link.rel='noopener noreferrer';
+   const selectPickup=el('button','button gold select-pickup',t('selectPickup'));selectPickup.onclick=()=>choose(item,true);details.append(selectPickup);
    details.append(el('span','atm-selection-kicker',t('info')),title,meta,el('p','real-walk-summary',walkLabel(item)),start,link,el('small','atm-support-note',t('unsupported')));const warning=el('p','real-walk-warning',t('walkWarning'));if(item.address)meta.textContent=item.address+' · '+meta.textContent;item.attributions?.forEach(a=>{const credit=el('a','google-places-credit',a.provider||'Google Maps');if(a.providerURI&&/^https:\/\//.test(a.providerURI)){credit.href=a.providerURI;credit.target='_blank';credit.rel='noopener noreferrer';}details.append(credit);});
-   list.querySelectorAll('button').forEach((b,n)=>{b.classList.toggle('active',items[n].id===item.id);b.setAttribute('aria-pressed',String(items[n].id===item.id));});
-   markers.forEach((m,n)=>{m.content.classList.toggle('selected',items[n].id===item.id);m.zIndex=items[n].id===item.id?100:1;});
+   list.querySelectorAll('button').forEach((b,n)=>{b.classList.toggle('active',items[n].id===confirmedAtmId);b.setAttribute('aria-pressed',String(items[n].id===item.id));});
+   markers.forEach((m,n)=>{m.content.classList.toggle('selected',items[n].id===item.id);m.zIndex=items[n].id===confirmedAtmId?100:1;});
    if(routeLine&&!navItem)routeLine.setMap(null);if(map&&item.walk?.path?.length&&!navItem)routeLine=new google.maps.Polyline({map,path:item.walk.path,strokeColor:'#0575e6',strokeWeight:5,strokeOpacity:.9});
    if(map)map.panTo({lat:item.lat,lng:item.lng});
   }
@@ -162,7 +164,7 @@ window.AtmMap=(()=>{
     map=new Map(canvas,{center:centre,zoom:15,mapId:'DEMO_MAP_ID',mapTypeControl:false,streetViewControl:false,fullscreenControl:false,gestureHandling:'greedy',zoomControl:false,cameraControl:false,keyboardShortcuts:false});await google.maps.importLibrary('marker');await search();
    }catch(error){if(!disposed){status.textContent=t(error.message==='KEY'?'key':'mapError');retry.disabled=false;}}
   }
-  select.onchange=()=>{pickup?.clear();centre=areas[select.value];live=false;if(map){userMarker&&(userMarker.map=null);map.setCenter(centre);search();}};
+  select.onchange=()=>{confirmedAtmId=null;pickup?.clear();centre=areas[select.value];live=false;if(map){userMarker&&(userMarker.map=null);map.setCenter(centre);search();}};
   locate.onclick=()=>{
    if(!map||!navigator.geolocation){status.textContent=t(map?'denied':'key');return;}
    locate.disabled=true;navigator.geolocation.getCurrentPosition(async p=>{
