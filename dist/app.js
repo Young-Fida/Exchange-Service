@@ -179,6 +179,12 @@ document.querySelectorAll('a[href^="#/"]').forEach(a=>a.addEventListener('click'
 window.addEventListener('hashchange',()=>{const next=route();if(state.allowedRoute===next)state.allowedRoute=null;if(next==='home'||next==='exchange')resetExchange();if(faqDialog.open)faqDialog.close();if(drawer.open)drawer.close();if(routeDialog.open)routeDialog.close();if(ratesDialog.open)ratesDialog.close();closeLanguages();render();});window.addEventListener('pagehide',()=>{clearTimers();state.request=null;state.draft.name='';});
 if(!location.hash||!['home','exchange','apply','loading','code','map','done'].includes(route()))history.replaceState(null,'','#/home');render();
 
-function startCurrencyReveal(){go('apply',{withinFlow:true});}
+function startCurrencyReveal(){
+ const root=screen.querySelector('.currency-hero');if(!root||root.classList.contains('is-revealing'))return;
+ root.classList.add('is-revealing');root.querySelectorAll('button').forEach(b=>{b.disabled=true;b.setAttribute('aria-busy','true');});
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ // Finish the 1.38 s reveal and hold the completed won note before opening registration.
+ state.loadingTimers.push(setTimeout(()=>{if(root.isConnected)go('apply',{withinFlow:true});},reduced?350:1800));
+}
 
 function wireToyHome(){const root=document.querySelector('#toy-earth');if(!root||!window.PlayfulEarth)return;state.earthStop=window.PlayfulEarth.attach({root,expanded:Boolean(state.toyExpanded),onExpand:()=>{state.toyExpanded=true;},onStart:()=>go('apply',{withinFlow:true}),strings:{open:t('toyOpen'),ready:t('toyReady'),opening:t('toyOpening')}});}
