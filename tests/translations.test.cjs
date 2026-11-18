@@ -16,3 +16,10 @@ test('all application and live-rate messages have five non-empty translations',(
  }
  for(const required of ['liveRates','rateDate','rateSource','rateUnsupported','rateNotice','leaveDescription','language','applyTitle','faqTitle','faqBadge','faqIntro','faqPlan',...Array.from({length:7},(_,i)=>'faqQ'+(i+1)),...Array.from({length:7},(_,i)=>'faqA'+(i+1))])assert.ok(context.catalog[required],required);
 });
+
+test('demo registration copy covers five locales without untranslated Korean',()=>{
+ const demo=fs.readFileSync(require.resolve('../dist/demo-verification.js'),'utf8');
+ const block=demo.slice(demo.indexOf('const messages='),demo.indexOf('const drawings='));
+ const context={};vm.createContext(context);vm.runInContext(block+'this.catalog=messages;',context);
+ for(const [key,values] of Object.entries(context.catalog)){assert.equal(values.length,5,key);for(const value of values)assert.ok(typeof value==='string'&&value.trim(),key);for(const value of values.slice(1))assert.equal(/[가-힣]/.test(value),false,key);}
+});
