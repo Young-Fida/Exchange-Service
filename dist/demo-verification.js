@@ -4,30 +4,41 @@ const locales=['ko','en','ja','zh-CN','zh-TW'];
 const messages={
  title:['인증하기','Verification','認証する','进行验证','進行驗證'],
  intro:['인증 방식을 선택해주세요','Choose a verification method','認証方法を選んでください','请选择验证方式','請選擇驗證方式'],
- subtitle:['한 가지 방식을 체험하면 금액 입력으로 이동해요.','Try one method, then enter your exchange amount.','いずれか一つを体験すると金額入力へ進みます。','体验一种方式后，即可输入换汇金额。','體驗一種方式後，即可輸入換匯金額。'],
- demo:['모의 인증 · 실제 등록 아님','Demo verification · No real registration','デモ認証・実際の登録ではありません','模拟验证 · 非真实注册','模擬驗證 · 非真實註冊'],
- privacy:['실제 카드·여권·생체정보를 수집하거나 전송하지 않아요.','No real card, passport or biometric data is collected or sent.','実際のカード・旅券・生体情報は収集・送信しません。','不收集或传输真实卡片、护照或生物识别信息。','不蒐集或傳輸真實卡片、護照或生物辨識資訊。'],
+ subtitle:["등록을 마치면 환전 화면으로 자동 이동해요.","After registration, the exchange screen opens automatically.","登録後、自動で両替画面に進みます。","完成后自动进入换汇页面。","完成後自動進入換匯頁面。"],
+ demo:["기기 등록 · 결제 연동 전","Device registration · Payments not connected","端末登録・決済未接続","设备登记 · 尚未对接支付","裝置登錄 · 尚未串接付款"],
+ privacy:["촬영 이미지는 이 화면에서만 사용하고 저장·전송하지 않아요. 생체정보는 기기 밖으로 전달되지 않아요.","Camera images are used only on this screen, never saved or uploaded. Biometric data stays with your device.","撮影画像はこの画面でのみ使い、保存・送信しません。生体情報は端末の外へ送りません。","拍摄图像仅在本页面使用，不保存或上传；生物识别信息留在设备端。","拍攝影像僅在本頁使用，不儲存或上傳；生物辨識資訊留在裝置端。"],
  card:['신용카드 등록','Register credit card','クレジットカード登録','登记信用卡','登錄信用卡'],
  passport:['여권 등록','Register passport','パスポート登録','登记护照','登錄護照'],
  biometric:['생체키 등록','Register biometric key','生体キー登録','登记生物识别密钥','登錄生物辨識金鑰'],
- cardHint:['샘플 카드로 등록 과정을 체험해요','Try registration with a sample card','サンプルカードで登録を体験','使用示例卡体验登记流程','使用範例卡體驗登錄流程'],
- passportHint:['샘플 여권을 스캔하고 확인해요','Scan and review a sample passport','サンプル旅券をスキャンして確認','扫描并确认示例护照','掃描並確認範例護照'],
- biometricHint:['터치로 생체키 등록을 체험해요','Try a touch-based registration demo','タッチで生体キー登録を体験','触控体验生物识别密钥登记','觸控體驗生物辨識金鑰登錄'],
+ cardHint:["카메라를 허용하고 카드를 촬영해요","Allow the camera and capture your card","カメラを許可してカードを撮影","允许相机访问并拍摄卡片","允許相機存取並拍攝卡片"],
+ passportHint:["카메라를 허용하고 여권을 촬영해요","Allow the camera and capture your passport","カメラを許可して旅券を撮影","允许相机访问并拍摄护照","允許相機存取並拍攝護照"],
+ biometricHint:["기기의 지문·얼굴 인식 또는 PIN으로 패스키 생성","Create a passkey with device biometrics or PIN","端末の指紋・顔認証やPINでパスキーを作成","使用设备指纹、人脸或PIN创建通行密钥","使用裝置指紋、臉部或PIN建立通行密鑰"],
  cardAction:['샘플 카드 등록하기','Register sample card','サンプルカードを登録','登记示例卡','登錄範例卡'],
  passportAction:['샘플 여권 스캔하기','Scan sample passport','サンプル旅券をスキャン','扫描示例护照','掃描範例護照'],
- biometricAction:['터치하여 모의 인증','Touch to try verification','タッチしてデモ認証','点击进行模拟验证','點擊進行模擬驗證'],
+ biometricAction:["기기에 패스키 등록하기","Register a device passkey","端末にパスキーを登録","在设备上登记通行密钥","在裝置上登錄通行密鑰"],
  cardBusy:['샘플 카드 정보를 확인하고 있어요','Checking sample card details','サンプルカードを確認中','正在确认示例卡信息','正在確認範例卡資訊'],
  passportBusy:['샘플 여권을 읽고 있어요','Reading the sample passport','サンプル旅券を読み取り中','正在读取示例护照','正在讀取範例護照'],
  biometricBusy:['생체키 등록 과정을 시연하고 있어요','Simulating biometric key registration','生体キー登録をシミュレーション中','正在模拟生物识别密钥登记','正在模擬生物辨識金鑰登錄'],
  sample:['시연용 샘플','DEMO SAMPLE','デモ用サンプル','演示示例','展示範例'],
- biometricNote:['기기의 지문·얼굴 인식이나 실제 패스키를 사용하지 않아요.','This does not use device fingerprints, face recognition or a real passkey.','端末の指紋・顔認証や実際のパスキーは使いません。','不使用设备指纹、人脸识别或真实通行密钥。','不使用裝置指紋、臉部辨識或真實通行密鑰。'],
+ biometricNote:["실제 기기 인증 창이 열려요. 지문·얼굴·PIN은 기기에서 처리하며, 현재는 서버 계정 연결 없이 기기에 키를 생성해요.","A real device prompt will open. Biometrics or PIN are handled by your device. This creates a device key without linking a server account.","実際の端末認証画面が開きます。指紋・顔・PINは端末で処理し、現在はサーバーアカウントと連携せずキーを作成します。","将打开真实设备验证窗口。指纹、人脸或PIN由设备处理，目前仅在设备创建密钥，不关联服务器账户。","將開啟真實裝置驗證視窗。指紋、臉部或PIN由裝置處理，目前僅在裝置建立金鑰，不關聯伺服器帳戶。"],
  success:['모의 인증 완료','Demo verification complete','デモ認証完了','模拟验证完成','模擬驗證完成'],
  successHint:['선택한 방식의 체험을 마쳤어요. 이제 환전 금액을 입력해주세요.','Your selected demo is complete. You can now enter your exchange amount.','選択した体験が完了しました。両替金額を入力してください。','所选体验已完成，现在可以输入换汇金额。','所選體驗已完成，現在可以輸入換匯金額。'],
  next:['환전 금액 입력하기','Enter exchange amount','両替金額を入力','输入换汇金额','輸入換匯金額'],
  change:['다른 인증 방식 선택','Choose another method','別の認証方法を選ぶ','选择其他验证方式','選擇其他驗證方式'],
  back:['이전','Back','戻る','返回','返回'],
  close:['닫기','Close','閉じる','关闭','關閉'],
- waiting:['확인 중','Checking','確認中','确认中','確認中']
+ waiting:['확인 중','Checking','確認中','确认中','確認中'],
+ cameraAction:["카메라 허용하고 촬영","Enable camera","カメラを起動","开启相机","開啟相機"],
+ capture:["촬영 완료","Capture & continue","撮影して進む","拍摄并继续","拍攝並繼續"],
+ cameraWait:["카메라 권한을 허용해주세요","Please allow camera access","カメラを許可してください","请允许相机访问","請允許相機存取"],
+ cameraFrame:["테두리 안에 맞춰주세요","Align within the frame","枠の中に合わせてください","请对齐边框","請對齊邊框"],
+ cameraNote:["카드사 등록·여권 진위 확인은 아직 연결되지 않았어요. 사진은 촬영 직후 폐기하고 환전 입력 화면으로 이동해요.","Card-issuer registration and passport validation are not connected. The captured image is discarded immediately, then the exchange form opens.","カード会社への登録・旅券の真偽確認は未接続です。撮影画像は直ちに破棄し、両替入力に進みます。","尚未对接发卡机构登记或护照真伪验证。拍摄后立即丢弃图像，并进入换汇输入页面。","尚未串接發卡機構登錄或護照真偽驗證。拍攝後立即丟棄影像，並進入換匯輸入頁面。"],
+ keyWait:["기기의 인증 창에서 등록을 완료해주세요","Complete registration in your device prompt","端末の認証画面で登録を完了してください","请在设备验证窗口完成登记","請在裝置驗證視窗完成登錄"],
+ cancelled:["등록을 취소했어요. 다시 시도하거나 다른 방식을 선택해주세요.","Registration was cancelled. Retry or choose another method.","登録がキャンセルされました。再試行するか別の方法を選んでください。","登记已取消。请重试或选择其他方式。","登錄已取消。請重試或選擇其他方式。"],
+ cameraError:["카메라를 열지 못했어요. 브라우저의 카메라 권한과 다른 앱 사용 여부를 확인해주세요.","Camera could not open. Check browser permissions and whether another app is using it.","カメラを開けません。ブラウザーの許可と他アプリの使用状況を確認してください。","无法打开相机，请检查浏览器权限及其他应用是否占用相机。","無法開啟相機，請檢查瀏覽器權限及其他應用程式是否佔用相機。"],
+ unsupported:["이 브라우저·기기에서는 지원되지 않아요. 휴대폰의 Safari 또는 Chrome에서 HTTPS 주소로 열어주세요.","Not supported on this browser or device. Open the HTTPS site in Safari or Chrome on your phone.","このブラウザー・端末では利用できません。スマートフォンのSafariまたはChromeでHTTPSサイトを開いてください。","此浏览器或设备不支持。请在手机Safari或Chrome中打开HTTPS网站。","此瀏覽器或裝置不支援。請在手機Safari或Chrome中開啟HTTPS網站。"],
+ keyError:["패스키 등록에 실패했어요. 기기의 화면 잠금·패스키 설정을 확인한 뒤 다시 시도해주세요.","Passkey registration failed. Check device screen-lock and passkey settings, then retry.","パスキー登録に失敗しました。端末の画面ロック・パスキー設定を確認して再試行してください。","通行密钥登记失败，请检查设备锁屏和通行密钥设置后重试。","通行密鑰登錄失敗，請檢查裝置鎖定畫面與通行密鑰設定後重試。"],
+ retry:["다시 시도","Try again","再試行","重试","重試"],
 };
 const drawings={
  card:'<rect x="3" y="6" width="26" height="20" rx="4"/><path d="M3 12h26M8 21h5m5 0h3"/>',
@@ -41,25 +52,59 @@ const svg=(name)=>'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" st
 function open({language='en',onComplete,onCancel}){
  const idx=Math.max(0,locales.indexOf(language));const t=k=>messages[k][idx];
  const dialog=document.createElement('dialog');dialog.className='verification-sheet';dialog.setAttribute('aria-labelledby','verification-title');
- let mode=null,stage='choose',timer=null,disposed=false;
- function dispose(){if(disposed)return;disposed=true;clearTimeout(timer);if(dialog.open)dialog.close();dialog.remove();}
+ let mode=null,stage='choose',stream=null,controller=null,generation=0,disposed=false,error='';
+ function cleanup(){generation++;controller?.abort();controller=null;window.DeviceRegistration.stopCamera(stream);stream=null;}
+ function dispose(){if(disposed)return;disposed=true;document.removeEventListener('visibilitychange',hidden);cleanup();if(dialog.open)dialog.close();dialog.remove();}
  function cancel(){dispose();onCancel?.();}
+ function complete(){const method=mode;dispose();onComplete?.(method);}
+ function choose(){cleanup();mode=null;stage='choose';error='';draw();focusTitle();}
+ async function start(){
+  if(stage==='busy'||stage==='camera')return;cleanup();const active=generation;controller=new AbortController();const signal=controller.signal;stage='busy';error='';draw();
+  try{
+   if(mode==='biometric'){
+    await window.DeviceRegistration.createPasskey({signal});
+    if(!disposed&&active===generation)complete();
+   }else{
+    const camera=await window.DeviceRegistration.requestCamera({signal});
+    if(disposed||active!==generation){window.DeviceRegistration.stopCamera(camera);return;}
+    stream=camera;stage='camera';draw();const video=dialog.querySelector('video');video.srcObject=stream;
+    await video.play();if(disposed||active!==generation)return;
+    const capture=dialog.querySelector('[data-auth-capture]');if(capture)capture.disabled=video.readyState<2;
+    video.addEventListener('loadeddata',()=>{if(!disposed&&active===generation){const b=dialog.querySelector('[data-auth-capture]');if(b)b.disabled=false;}},{once:true});
+    stream.getVideoTracks()[0]?.addEventListener('ended',()=>{if(!disposed&&active===generation){cleanup();stage='ready';error=t('cameraError');draw();}},{once:true});
+   }
+  }catch(e){
+   if(disposed||active!==generation)return;cleanup();stage='ready';
+   error=t(e.name==='NotSupportedError'?'unsupported':mode==='biometric'?(e.name==='NotAllowedError'||e.name==='AbortError'?'cancelled':'keyError'):'cameraError');draw();focusTitle();
+  }
+ }
+ function capture(){
+  const video=dialog.querySelector('video');if(!video||video.readyState<2||!video.videoWidth)return;
+  const image=document.createElement('canvas');image.width=Math.min(video.videoWidth,1280);image.height=Math.round(image.width*video.videoHeight/video.videoWidth);
+  const context=image.getContext('2d');if(!context){error=t('cameraError');cleanup();stage='ready';draw();return;}
+  context.drawImage(video,0,0,image.width,image.height);
+  // No OCR, image storage, bank enrollment or upload. Discard the captured pixels immediately.
+  context.clearRect(0,0,image.width,image.height);image.width=image.height=0;complete();
+ }
  function art(){
- if(mode==='card')return '<div class="sample-card"><span class="sample-card-brand">QR EXCHANGE</span><span class="sample-card-chip"></span><strong>•••• &nbsp; •••• &nbsp; •••• &nbsp; 4242</strong><span class="sample-card-bottom"><span>DEMO TRAVELER</span><b>'+t('sample')+'</b></span></div>';
- if(mode==='passport')return '<div class="sample-passport"><div class="passport-book-title">PASSPORT <small>'+t('sample')+'</small></div><div class="passport-body"><div class="passport-portrait"><svg viewBox="0 0 60 72" fill="currentColor" aria-hidden="true"><circle cx="30" cy="24" r="13"/><path d="M7 70v-8a23 23 0 0 1 46 0v8Z"/></svg></div><div class="passport-lines"><strong>DEMO TRAVELER</strong><span></span><span></span><span></span><b>••••••••</b></div></div><div class="passport-mrz" aria-hidden="true">DEMO&lt;&lt;TRAVELER&lt;&lt;&lt;&lt;&lt;<br>SAMPLE&lt;&lt;NOT&lt;VALID&lt;&lt;&lt;</div><span class="passport-scan"></span></div>';
- return '<div class="biometric-orbit"><div class="biometric-sensor">'+svg('biometric')+'</div><span></span><span></span></div>';
+  if(mode==='biometric')return '<div class="biometric-orbit"><div class="biometric-sensor">'+svg('biometric')+'</div><span></span><span></span></div>';
+  return '<div class="capture-view '+(mode==='passport'?'passport-capture':'')+'">'+(stage==='camera'?'<video autoplay muted playsinline aria-label="'+t(mode)+'"></video><div class="capture-outline" aria-hidden="true"></div><span class="capture-guide">'+t('cameraFrame')+'</span>':'<span class="capture-placeholder">'+svg(mode)+'<small>'+t(stage==='busy'?'cameraWait':'cameraAction')+'</small></span>')+'</div>';
  }
  function draw(){
- const title=stage==='choose'?t('intro'):stage==='done'?t('success'):t(mode);
- dialog.innerHTML='<div class="verification-header"><button class="verification-icon-button" data-auth-back aria-label="'+t(mode&&stage!=='done'?'back':'close')+'">'+svg(mode&&stage!=='done'?'back':'close')+'</button><span>'+t('title')+'</span><span class="verification-header-dot" aria-hidden="true"></span></div><div class="verification-scroll"><span class="verification-demo">'+t('demo')+'</span><h2 id="verification-title" tabindex="-1">'+title+'</h2><p class="verification-subtitle">'+(stage==='choose'?t('subtitle'):stage==='done'?t('successHint'):t(mode+'Hint'))+'</p>'+(stage==='choose'?'<div class="verification-methods">'+['card','passport','biometric'].map(k=>'<button class="verification-method" data-auth-method="'+k+'"><span class="verification-method-icon">'+svg(k)+'</span><span><strong>'+t(k)+'</strong><small>'+t(k+'Hint')+'</small></span><b aria-hidden="true">›</b></button>').join('')+'</div>':stage==='done'?'<div class="verification-success">'+svg('check')+'</div><div class="verification-result">'+svg(mode)+'<strong>'+t(mode)+'</strong><span>'+t('success')+'</span></div>':'<div class="verification-art '+mode+' '+(stage==='busy'?'is-scanning':'')+'">'+art()+'</div>'+(mode==='biometric'?'<p class="biometric-demo-note">'+t('biometricNote')+'</p>':'')+(stage==='busy'?'<div class="verification-progress" role="progressbar" aria-label="'+t('waiting')+'"><span></span></div><p class="verification-status" role="status">'+t(mode+'Busy')+'</p>':''))+'<p class="verification-privacy">'+svg('check')+'<span>'+t('privacy')+'</span></p></div><div class="verification-actions">'+(stage==='choose'?'':stage==='done'?'<button class="button gold" data-auth-continue>'+t('next')+'<span aria-hidden="true">→</span></button>':'<button class="button gold" data-auth-start '+(stage==='busy'?'disabled aria-busy="true"':'')+'>'+t(stage==='busy'?'waiting':mode+'Action')+'</button><button class="verification-change" data-auth-change>'+t('change')+'</button>')+'</div>';
- dialog.querySelector('[data-auth-back]').addEventListener('click',()=>{if(mode&&stage!=='done'){clearTimeout(timer);mode=null;stage='choose';draw();focusTitle();}else cancel();});
- dialog.querySelectorAll('[data-auth-method]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.authMethod;stage='ready';draw();focusTitle();}));
- dialog.querySelector('[data-auth-change]')?.addEventListener('click',()=>{clearTimeout(timer);mode=null;stage='choose';draw();focusTitle();});
- dialog.querySelector('[data-auth-start]')?.addEventListener('click',()=>{if(stage!=='ready')return;stage='busy';draw();dialog.querySelector('[role="status"]')?.setAttribute('aria-live','polite');timer=setTimeout(()=>{if(disposed)return;stage='done';draw();focusTitle();},1800);});
- dialog.querySelector('[data-auth-continue]')?.addEventListener('click',()=>{const method=mode;dispose();onComplete?.(method);});
+  dialog.innerHTML='<div class="verification-header"><button class="verification-icon-button" data-auth-back aria-label="'+t(mode?'back':'close')+'">'+svg(mode?'back':'close')+'</button><span>'+t('title')+'</span><span class="verification-header-dot" aria-hidden="true"></span></div><div class="verification-scroll"><span class="verification-demo">'+t('demo')+'</span><h2 id="verification-title" tabindex="-1">'+t(stage==='choose'?'intro':mode)+'</h2><p class="verification-subtitle">'+t(stage==='choose'?'subtitle':mode+'Hint')+'</p>'+(stage==='choose'?'<div class="verification-methods">'+['card','passport','biometric'].map(k=>'<button class="verification-method" data-auth-method="'+k+'"><span class="verification-method-icon">'+svg(k)+'</span><span><strong>'+t(k)+'</strong><small>'+t(k+'Hint')+'</small></span><b aria-hidden="true">›</b></button>').join('')+'</div>':'<div class="verification-art '+mode+' '+(stage==='busy'?'is-scanning':'')+'">'+art()+'</div><p class="biometric-demo-note">'+t(mode==='biometric'?'biometricNote':'cameraNote')+'</p>'+(stage==='busy'?'<p class="verification-status" role="status">'+t(mode==='biometric'?'keyWait':'cameraWait')+'</p>':''))+(error?'<p class="verification-error" role="alert">'+error+'</p>':'')+'<p class="verification-privacy">'+svg('check')+'<span>'+t('privacy')+'</span></p></div><div class="verification-actions">'+(stage==='choose'?'':stage==='camera'?'<button class="button gold" data-auth-capture disabled>'+t('capture')+'</button><button class="verification-change" data-auth-change>'+t('change')+'</button>':'<button class="button gold" data-auth-start '+(stage==='busy'?'disabled aria-busy="true"':'')+'>'+t(stage==='busy'?'waiting':error?'retry':mode==='biometric'?'biometricAction':'cameraAction')+'</button><button class="verification-change" data-auth-change>'+t('change')+'</button>')+'</div>';
+  dialog.querySelector('[data-auth-back]').addEventListener('click',()=>mode?choose():cancel());
+  dialog.querySelectorAll('[data-auth-method]').forEach(b=>b.addEventListener('click',()=>{cleanup();mode=b.dataset.authMethod;stage='ready';error='';draw();focusTitle();if(mode!=='biometric')start();}));
+  dialog.querySelector('[data-auth-change]')?.addEventListener('click',choose);
+  dialog.querySelector('[data-auth-start]')?.addEventListener('click',start);
+  dialog.querySelector('[data-auth-capture]')?.addEventListener('click',capture);
  }
  function focusTitle(){dialog.querySelector('h2')?.focus({preventScroll:true});}
- dialog.addEventListener('cancel',e=>{e.preventDefault();cancel();});document.body.appendChild(dialog);draw();dialog.showModal();focusTitle();return dispose;
+ dialog.addEventListener('cancel',e=>{e.preventDefault();cancel();});
+ function hidden(){if(document.hidden&&stream){cleanup();stage='ready';error='';draw();}}
+ document.addEventListener('visibilitychange',hidden);
+ // Always release hardware and listeners when the surrounding route is disposed.
+ document.body.appendChild(dialog);draw();dialog.showModal();focusTitle();
+ return dispose;
 }
 window.DemoVerification={open};
 })();
