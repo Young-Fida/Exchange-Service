@@ -138,7 +138,7 @@ window.AtmMap=(()=>{
      const marker=new AdvancedMarkerElement({map,position:{lat:p.lat,lng:p.lng},title:p.name,content:pin});marker.addListener('click',()=>choose(p,true));markers.push(marker);
      const button=el('button','real-atm-option');button.append(el('span','atm-card-rank',String(n+1)),el('strong','atm-card-name',p.name),el('span','atm-card-distance',t('routeDistance')+' '+walkLabel(p)));button.onclick=()=>choose(p,true);list.append(button);
     });
-    if(items[0]){const saved=items.find(item=>item.id===confirmedAtmId);const initial=saved||items[0];choose(initial,Boolean(request)&&!saved);}
+    if(items[0]){const saved=items.find(item=>item.id===confirmedAtmId);const initial=saved||items[0];if(!saved&&confirmedAtmId){confirmedAtmId=null;pickup?.clear();}choose(initial);}
    }catch(error){if(!disposed&&id===queryId&&error.name!=='AbortError')status.textContent=t('failed');}
    finally{if(!disposed&&id===queryId){retry.disabled=false;root.classList.remove('is-scanning');}}
   }
