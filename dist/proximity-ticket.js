@@ -28,16 +28,14 @@ window.PickupTicket=(()=>{
  }
  function attach({root,request,language,t,distance,onCopy,onState,onReissue,onPosition,onQrOpen}){
   const index=['ko','en','ja','zh-CN','zh-TW'].indexOf(language),w=k=>words[k][index<0?1:index];
-  let stableSince=null,stableAnchor=null,stableSamples=0,stableLast=null;let target=request.atmTarget||null,fix=null,denied=false,locationError=null,watch,dialog,key='',disposed=false,polling=false,lastPoll=0,fallbackPending=false,lastFallback=0;
+  let target=request.atmTarget||null,fix=null,denied=false,locationError=null,watch,dialog,key='',disposed=false,polling=false,lastPoll=0,fallbackPending=false,lastFallback=0;
   const el=(tag,cls,text)=>{const n=document.createElement(tag);n.className=cls||'';if(text)n.textContent=text;return n;};
   const ticket=el('section','withdrawal-ticket proximity-ticket');ticket.setAttribute('aria-live','polite');root.classList.add('has-withdrawal');root.append(ticket);
-  const allowed=()=>gate(target,fix,Date.now(),distance,!document.hidden).unlocked&&stableSince!==null&&stableSamples>=2&&stableLast-stableSince>=5000&&Date.now()-stableLast<=7000&&request.expires>Date.now();
-  function resetStability(){stableSince=null;stableAnchor=null;stableSamples=0;stableLast=null;}
-  function observeStability(next){const now=Date.now(),valid=gate(target,next,now,distance,!document.hidden).unlocked&&now-next.timestamp<=7000;if(!valid){resetStability();return;}if(stableSince===null||next.timestamp-stableLast>7000||Math.hypot((stableAnchor.lat-next.lat)*111320,(stableAnchor.lng-next.lng)*111320*Math.cos(next.lat*Math.PI/180))>15){stableSince=next.timestamp;stableAnchor={lat:next.lat,lng:next.lng};stableSamples=1;stableLast=next.timestamp;return;}if(next.timestamp>stableLast){stableLast=next.timestamp;stableSamples++;}}
+  const allowed=()=>Boolean(target&&request.arrivedAtmId===target.id&&request.expires>Date.now());
   const fixAge=()=>w('updated')+' · '+new Intl.RelativeTimeFormat(language,{numeric:'always'}).format(-Math.max(0,Math.floor((Date.now()-fix.timestamp)/1000)),'second');
   function render(){
    const age=ticket.querySelector?.('.proximity-age');if(age&&fix)age.textContent=fixAge();
-   const state=gate(target,fix,Date.now(),distance,!document.hidden),expired=request.expires<=Date.now();if(!state.unlocked||stableLast!==null&&Date.now()-stableLast>7000)resetStability();if(state.unlocked&&!allowed()){state.unlocked=false;state.reason='stabilizing';}
+   const state=gate(target,fix,Date.now(),distance,!document.hidden),expired=request.expires<=Date.now();if(state.unlocked&&!expired)request.arrivedAtmId=target.id;if(allowed()){state.unlocked=true;state.reason='arrived';}
    const next=state.unlocked&&!expired?'arrived|'+target.id:[expired?'expired':state.reason,target?.id||'',state.metres===null?'':Math.ceil(state.metres),denied,locationError,Math.round(fix?.accuracy||0)].join('|');
    if(next===key)return;key=next;onState?.({unlocked:state.unlocked&&!expired,reason:expired?'expired':state.reason});dialog?.close();dialog?.remove();dialog=null;ticket.replaceChildren();
    ticket.classList.toggle('is-unlocked',state.unlocked&&!expired);
@@ -57,9 +55,9 @@ window.PickupTicket=(()=>{
    body.append(top,digits,el('small','proximity-target',target.name),el('small','ticket-waiting',w('waiting')));ticket.append(qrButton,body);
    dialog=el('dialog','withdrawal-qr-dialog');dialog.setAttribute('aria-label',t('scan'));const close=el('button','qr-dialog-close','×');close.setAttribute('aria-label',t('close'));close.onclick=()=>dialog.close();const large=el('div','qr-large');large.innerHTML=qr.createSvgTag({cellSize:10,margin:40,scalable:true});dialog.append(close,el('h2','',t('withdrawal')),large,el('strong','qr-dialog-digits',request.code.slice(0,3)+' '+request.code.slice(3)),el('p','',t('demoQr')));root.append(dialog);qrButton.onclick=()=>{if(allowed()){dialog.showModal();onQrOpen?.();}};
   }
-  function accept(pos){if(disposed||denied||!Number.isFinite(pos?.timestamp)||fix&&pos.timestamp<fix.timestamp)return;denied=false;locationError=null;fix={lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy,timestamp:pos.timestamp};observeStability(fix);onPosition?.(pos);render();}
+  function accept(pos){if(disposed||denied||!Number.isFinite(pos?.timestamp)||fix&&pos.timestamp<fix.timestamp)return;denied=false;locationError=null;fix={lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy,timestamp:pos.timestamp};onPosition?.(pos);render();}
   function reject(error,tryFallback=true){
-   if(disposed)return;denied=error?.code===1;locationError=denied?null:error?.code===3?'timeout':'unavailable';if(denied){fix=null;resetStability();onPosition?.(null);}render();
+   if(disposed)return;denied=error?.code===1;locationError=denied?null:error?.code===3?'timeout':'unavailable';if(denied){fix=null;onPosition?.(null);}render();
    if(!denied&&!document.hidden&&tryFallback&&!fallbackPending&&navigator.geolocation?.getCurrentPosition&&Date.now()-lastFallback>10000){fallbackPending=true;lastFallback=Date.now();navigator.geolocation.getCurrentPosition(pos=>{fallbackPending=false;accept(pos);},err=>{fallbackPending=false;reject(err,false);},{enableHighAccuracy:false,maximumAge:10000,timeout:15000});}
   }
   function start(){
@@ -69,9 +67,9 @@ window.PickupTicket=(()=>{
    navigator.geolocation.getCurrentPosition?.(accept,fail,{enableHighAccuracy:true,maximumAge:0,timeout:15000});
    watch=navigator.geolocation.watchPosition(accept,fail,{enableHighAccuracy:true,maximumAge:0,timeout:15000});
   }
-  function visibility(){resetStability();key='';render();if(!document.hidden&&target)start();}
-  document.addEventListener('visibilitychange',visibility);const timer=setInterval(()=>{render();if(!disposed&&!denied&&target&&!document.hidden&&navigator.geolocation?.getCurrentPosition&&!polling&&(!fix||stableSince!==null||Date.now()-fix.timestamp>10000)&&Date.now()-lastPoll>2000){polling=true;lastPoll=Date.now();navigator.geolocation.getCurrentPosition(pos=>{polling=false;accept(pos);},error=>{polling=false;reject(error);},{enableHighAccuracy:true,maximumAge:0,timeout:15000});}},1000);render();if(target)start();
-  return {element:ticket,accept,start,clear(){resetStability();target=null;request.atmTarget=null;key='';render();},select(item){resetStability();target={id:item.id,name:item.name,lat:item.lat,lng:item.lng};request.atmTarget=target;key='';render();start();},dispose(){disposed=true;clearInterval(timer);if(watch!==undefined)navigator.geolocation?.clearWatch(watch);document.removeEventListener('visibilitychange',visibility);dialog?.close();dialog?.remove();ticket.remove();}};
+  function visibility(){key='';render();if(!document.hidden&&target)start();}
+  document.addEventListener('visibilitychange',visibility);const timer=setInterval(()=>{render();if(!disposed&&!denied&&target&&!document.hidden&&navigator.geolocation?.getCurrentPosition&&!polling&&(!fix||Date.now()-fix.timestamp>10000)&&Date.now()-lastPoll>2000){polling=true;lastPoll=Date.now();navigator.geolocation.getCurrentPosition(pos=>{polling=false;accept(pos);},error=>{polling=false;reject(error);},{enableHighAccuracy:true,maximumAge:0,timeout:15000});}},1000);render();if(target)start();
+  return {element:ticket,accept,start,clear(){request.arrivedAtmId=null;target=null;request.atmTarget=null;key='';render();},select(item){if(target?.id!==item.id)request.arrivedAtmId=null;target={id:item.id,name:item.name,lat:item.lat,lng:item.lng};request.atmTarget=target;key='';render();start();},dispose(){disposed=true;clearInterval(timer);if(watch!==undefined)navigator.geolocation?.clearWatch(watch);document.removeEventListener('visibilitychange',visibility);dialog?.close();dialog?.remove();ticket.remove();}};
  }
  return {attach,gate,words};
 })();
