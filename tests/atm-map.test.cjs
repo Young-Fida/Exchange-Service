@@ -53,3 +53,6 @@ test('map configuration does not expose the exchange-rate server secret',()=>{
  }finally{if(previous===undefined)delete process.env.GOOGLE_MAPS_BROWSER_KEY;else process.env.GOOGLE_MAPS_BROWSER_KEY=previous;}
 });
 test('TMAP IDs are not passed to Google as Google Place IDs',()=>{const url=new URL(scope.window.AtmMap.mapsUrl({lat:35.1,lng:129.1,id:'tmap:123'}));assert.equal(url.searchParams.has('destination_place_id'),false);assert.equal(url.searchParams.get('destination'),'35.1,129.1');});
+
+test('remaining route removes the travelled part even midway through a long segment',()=>{const path=[{lat:35,lng:129},{lat:35,lng:129.01},{lat:35,lng:129.02}];const p={lat:35,lng:129.005};const result=scope.window.AtmMap.remainingRoute(path,p);assert.equal(result.segment,0);assert.ok(Math.abs(result.path[1].lng-129.005)<1e-8);assert.equal(result.path.at(-1).lng,129.02);assert.equal(result.path.some(x=>x.lng===129),false);});
+test('remaining route does not redraw previously passed segments when GPS wobbles',()=>{const path=[{lat:35,lng:129},{lat:35,lng:129.01},{lat:35,lng:129.02}];const first=scope.window.AtmMap.remainingRoute(path,{lat:35,lng:129.015});const next=scope.window.AtmMap.remainingRoute(path,{lat:35,lng:129.009},first.segment);assert.equal(first.segment,1);assert.equal(next.segment,1);assert.equal(next.path.some(x=>x.lng===129),false);});

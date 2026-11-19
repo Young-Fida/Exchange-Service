@@ -58,6 +58,7 @@ window.AtmMap=(()=>{
  }
  let sdkPromise;
  function distance(a,b){const r=Math.PI/180;const p=(b.lat-a.lat)*r,q=(b.lng-a.lng)*r;return 6371000*2*Math.atan2(Math.sqrt(Math.sin(p/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(q/2)**2),Math.sqrt(1-(Math.sin(p/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(q/2)**2)));}
+ function remainingRoute(path,position,minSegment=0){if(!Array.isArray(path)||path.length<2)return {path:[],segment:0};const cos=Math.cos(position.lat*Math.PI/180),px=position.lng*cos,py=position.lat;let best=Infinity,segment=Math.min(minSegment,path.length-2),point=path[segment];for(let i=segment;i<path.length-1;i++){const a=path[i],b=path[i+1],ax=a.lng*cos,ay=a.lat,bx=b.lng*cos,by=b.lat,dx=bx-ax,dy=by-ay,len=dx*dx+dy*dy,t=len?Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/len)):0,x=ax+t*dx,y=ay+t*dy,d=(px-x)**2+(py-y)**2;if(d<best){best=d;segment=i;point={lat:y,lng:cos?x/cos:a.lng};}}return {path:[position,point,...path.slice(segment+1)],segment};}
  function mapsUrl(p,origin,language){const u=new URL('https://www.google.com/maps/dir/');u.search=new URLSearchParams({api:'1',travelmode:'walking',...(origin?{origin:origin.lat+','+origin.lng}:{}),...(language?{hl:language}:{}),destination:p.lat+','+p.lng,...(p.id&&!p.id.startsWith('tmap:')?{destination_place_id:p.id}:{})});return u.href;}
  async function loadSdk(language){
   if(window.google?.maps?.importLibrary)return;
@@ -78,13 +79,13 @@ window.AtmMap=(()=>{
   return sdkPromise;
  }
  function attach({root,language,area,labels,request,onCopy,onBack,onReissue,context,onContextChange,onDirectionsOpen}){
-  let disposed=false,map,radar,radarMarker,startMarker,routeLine,watchId,navItem,navGeneration=0,lastRouteAt=0,routeOrigin,markers=[],userMarker,items=[],selected,queryId=0,controller,live=false,walkState='pending',confirmedAtmId=request?.atmTarget?.id||null,positionFix=null;
+  let disposed=false,map,radar,radarMarker,startMarker,routeLine,watchId,navItem,navGeneration=0,lastRouteAt=0,routeOrigin,routeSegment=0,markers=[],userMarker,items=[],selected,queryId=0,controller,live=false,walkState='pending',confirmedAtmId=request?.atmTarget?.id||null,positionFix=null;
   area=context?.area||area;let centre=context?.centre||areas[area]||areas.haeundae;live=Boolean(context?.live);
   const i=['ko','en','ja','zh-CN','zh-TW'].indexOf(language),t=k=>text[k][i<0?1:i];
   const el=(name,cls,content)=>{const x=document.createElement(name);if(cls)x.className=cls;if(content)x.textContent=content;return x;};
   root.innerHTML='';
   let flowProgress,flowStep=2,lastPickupUnlocked=false;
-  const pickup=request?window.PickupTicket.attach({root,request,language,t,distance,onCopy,onReissue,onPosition:pos=>{positionFix=pos;if(!pos){updateDistanceSummary();return;}const statusNode=root.querySelector('.real-map-status');if(statusNode?.textContent===t('denied'))statusNode.textContent='';if(userMarker)userMarker.position={lat:pos.coords.latitude,lng:pos.coords.longitude};updateDistanceSummary();},onState:state=>{lastPickupUnlocked=state.unlocked;flowStep=state.unlocked?3:2;flowProgress?.setStep(flowStep);root.classList.toggle('pickup-arrived',state.unlocked);requestAnimationFrame(()=>{if(disposed)return;const overlay=root.querySelector('.map-code-overlay'),dock=root.querySelector('.real-map-dock'),anchor=root.querySelector('.real-atm-details');if(!overlay||!dock)return;overlay.hidden=!lastPickupUnlocked;if(lastPickupUnlocked){overlay.append(pickup.element);dock.scrollTop=0;}else dock.insertBefore(pickup.element,anchor);});}}):null;
+  const pickup=request?window.PickupTicket.attach({root,request,language,t,distance,onCopy,onReissue,onPosition:pos=>{positionFix=pos;if(!pos){updateDistanceSummary();return;}const statusNode=root.querySelector('.real-map-status');if(statusNode?.textContent===t('denied'))statusNode.textContent='';if(live&&radarMarker&&!navItem)radarMarker.position={lat:pos.coords.latitude,lng:pos.coords.longitude};updateDistanceSummary();},onState:state=>{lastPickupUnlocked=state.unlocked;flowStep=state.unlocked?3:2;flowProgress?.setStep(flowStep);root.classList.toggle('pickup-arrived',state.unlocked);requestAnimationFrame(()=>{if(disposed)return;const overlay=root.querySelector('.map-code-overlay'),dock=root.querySelector('.real-map-dock'),anchor=root.querySelector('.real-atm-details');if(!overlay||!dock)return;overlay.hidden=!lastPickupUnlocked;if(lastPickupUnlocked){overlay.append(pickup.element);dock.scrollTop=0;}else dock.insertBefore(pickup.element,anchor);});}}):null;
   const toolbar=el('div','real-map-toolbar'),select=el('select'),locate=el('button','real-location',t('locate'));
   select.setAttribute('aria-label',t('title'));Object.keys(areas).forEach(key=>{const o=el('option','',areas[key].names[i<0?1:i]);o.value=key;select.append(o);});select.value=area||'haeundae';
   if(onBack){const back=el('button','map-back','‹');back.setAttribute('aria-label',t('back'));back.onclick=onBack;toolbar.append(back);}toolbar.append(select,locate);root.append(toolbar);
@@ -136,15 +137,13 @@ window.AtmMap=(()=>{
      const marker=new AdvancedMarkerElement({map,position:{lat:p.lat,lng:p.lng},title:p.name,content:pin});marker.addListener('click',()=>choose(p,true));markers.push(marker);
      const button=el('button','real-atm-option');button.append(el('span','atm-card-rank',String(n+1)),el('strong','atm-card-name',p.name),el('span','atm-card-distance',t('routeDistance')+' '+walkLabel(p)));button.onclick=()=>choose(p,true);list.append(button);
     });
-    if(items[0])choose(items[0]);
+    if(items[0]){const saved=items.find(item=>item.id===confirmedAtmId);const initial=saved||items[0];choose(initial,Boolean(request)&&!saved);}
    }catch(error){if(!disposed&&id===queryId&&error.name!=='AbortError')status.textContent=t('failed');}
    finally{if(!disposed&&id===queryId){retry.disabled=false;root.classList.remove('is-scanning');}}
   }
   function updateRadar(){
-   if(!map)return;radar?.setMap(null);radarMarker&&(radarMarker.map=null);
-   radar=new google.maps.Circle({map,center:centre,radius:1000,fillColor:'#0575e6',fillOpacity:.065,strokeColor:'#0575e6',strokeOpacity:.3,strokeWeight:1,clickable:false});
-   const node=el('div','radar-origin'+(live?' is-live':''));node.append(el('span','radar-beam'),el('span','radar-dot'));
-   radarMarker=new google.maps.marker.AdvancedMarkerElement({map,position:centre,content:node,title:live?t('nearby'):t('area'),zIndex:0});
+   if(!map)return;radar?.setMap(null);radar=null;radarMarker&&(radarMarker.map=null);radarMarker=null;
+   if(!live)return;const node=el('span','real-user-pin');radarMarker=new google.maps.marker.AdvancedMarkerElement({map,position:centre,content:node,title:t('nearby'),zIndex:4});
   }
   function stopNavigation(){navGeneration++;if(watchId!==undefined)navigator.geolocation.clearWatch(watchId);watchId=undefined;navItem=null;startMarker&&(startMarker.map=null);startMarker=null;routeLine?.setMap(null);routeLine=null;}
   async function startNavigation(item,button){
@@ -156,10 +155,10 @@ window.AtmMap=(()=>{
     const refresh=async origin=>{
      const response=await fetch('/api/walking-routes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({origin,destinations:[{lat:item.lat,lng:item.lng}]}),signal:controller.signal});
      if(!response.ok)throw Error('ROUTE');const row=(await response.json()).rows?.[0];if(row?.condition!=='ROUTE_EXISTS'||!row.path?.length)throw Error('ROUTE');
-     if(disposed||generation!==navGeneration)throw Error('STALE');item.walk={distanceMeters:row.distanceMeters,durationMillis:row.durationMillis,path:row.path};const summary=details.querySelector('.real-walk-summary');if(summary)updateDistanceSummary();routeOrigin=origin;lastRouteAt=Date.now();routeLine?.setMap(null);routeLine=new google.maps.Polyline({map,path:row.path,strokeColor:'#0575e6',strokeWeight:6,strokeOpacity:1});
+     if(disposed||generation!==navGeneration)throw Error('STALE');item.walk={distanceMeters:row.distanceMeters,durationMillis:row.durationMillis,path:row.path};const summary=details.querySelector('.real-walk-summary');if(summary)updateDistanceSummary();routeOrigin=origin;lastRouteAt=Date.now();routeSegment=0;routeLine?.setMap(null);const remaining=remainingRoute(row.path,centre);routeSegment=remaining.segment;routeLine=new google.maps.Polyline({map,path:remaining.path,strokeColor:'#0575e6',strokeWeight:6,strokeOpacity:1});
     };
     try{await refresh({lat:centre.lat,lng:centre.lng});if(disposed||generation!==navGeneration)return;navItem=item;userMarker&&(userMarker.map=null);updateDistanceSummary();details.querySelector('.external-directions').href=mapsUrl(item,centre,language);status.textContent=t('tracking');basis.textContent=t('nearby');map.setCenter(centre);map.setZoom(17);button.disabled=false;button.textContent=t('stopWalk');button.onclick=()=>{stopNavigation();status.textContent='';choose(item);};
-     let refreshing=false;watchId=navigator.geolocation.watchPosition(async pos=>{if(disposed||!navItem)return;pickup?.accept(pos);centre={lat:pos.coords.latitude,lng:pos.coords.longitude};updateRadar();map.panTo(centre);if(routeLine&&item.walk?.path?.length){const path=item.walk.path;let nearest=0,best=Infinity;path.forEach((point,i)=>{const d=distance(centre,point);if(d<best){best=d;nearest=i;}});routeLine.setPath([centre,...path.slice(nearest)]);}if(!refreshing&&Date.now()-lastRouteAt>30000&&distance(routeOrigin,centre)>40){refreshing=true;try{await refresh({lat:centre.lat,lng:centre.lng});status.textContent=t('tracking');}catch{status.textContent=t('navFailed');}finally{refreshing=false;}}},error=>{status.textContent=error?.code===1?t('denied'):locationStatus();},{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
+     let refreshing=false;watchId=navigator.geolocation.watchPosition(async pos=>{if(disposed||!navItem)return;pickup?.accept(pos);centre={lat:pos.coords.latitude,lng:pos.coords.longitude};updateRadar();map.panTo(centre);if(routeLine&&item.walk?.path?.length){const remaining=remainingRoute(item.walk.path,centre,routeSegment);routeSegment=remaining.segment;routeLine.setPath(remaining.path);}if(!refreshing&&Date.now()-lastRouteAt>30000&&distance(routeOrigin,centre)>40){refreshing=true;try{await refresh({lat:centre.lat,lng:centre.lng});status.textContent=t('tracking');}catch{status.textContent=t('navFailed');}finally{refreshing=false;}}},error=>{status.textContent=error?.code===1?t('denied'):locationStatus();},{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
     }catch{if(!disposed){status.textContent=t('navFailed');button.disabled=false;}}
    },error=>{if(!disposed){button.disabled=false;status.textContent=error?.code===1?t('denied'):locationStatus();}},{enableHighAccuracy:true,timeout:10000,maximumAge:0});
   }
@@ -174,13 +173,12 @@ window.AtmMap=(()=>{
    if(!map||!navigator.geolocation){status.textContent=t(map?'denied':'key');return;}
    locate.disabled=true;navigator.geolocation.getCurrentPosition(async p=>{
     if(disposed)return;pickup?.accept(p);pickup?.start();locate.disabled=false;live=true;centre={lat:p.coords.latitude,lng:p.coords.longitude};map.setCenter(centre);
-    const {AdvancedMarkerElement}=await google.maps.importLibrary('marker');if(disposed)return;userMarker&&(userMarker.map=null);
-    userMarker=new AdvancedMarkerElement({map,position:centre,content:el('span','real-user-pin'),title:t('nearby')});search();
+    await google.maps.importLibrary('marker');if(disposed)return;userMarker&&(userMarker.map=null);userMarker=null;search();
    },error=>{if(!disposed){locate.disabled=false;status.textContent=error?.code===1?t('denied'):locationStatus();}},{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
   };
   const authError=()=>{if(!disposed)status.textContent=t('mapError');};window.addEventListener('qr-map-auth-error',authError);
   const distanceTimer=setInterval(()=>{if(positionFix&&Date.now()-positionFix.timestamp>60000)updateDistanceSummary();},1000);retry.onclick=()=>map?search():boot();boot();
   return ()=>{disposed=true;clearInterval(distanceTimer);stopNavigation();radar?.setMap(null);radarMarker&&(radarMarker.map=null);pickup?.dispose();flowProgress?.dispose();controller?.abort();window.removeEventListener('qr-map-auth-error',authError);markers.forEach(m=>m.map=null);userMarker&&(userMarker.map=null);};
  }
- return {attach,distance,mapsUrl,rankWalking,areas,text};
+ return {attach,distance,mapsUrl,rankWalking,remainingRoute,areas,text};
 })();
