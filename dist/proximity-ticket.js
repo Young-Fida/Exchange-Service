@@ -26,7 +26,7 @@ window.PickupTicket=(()=>{
   if(!Number.isFinite(fix.accuracy)||fix.accuracy<0)return {unlocked:false,reason:'inaccurate',metres};
  return {unlocked:metres<=30,reason:metres<=30?'arrived':'outside',metres};
  }
- function attach({root,request,language,t,distance,onCopy,onState,onReissue,onPosition}){
+ function attach({root,request,language,t,distance,onCopy,onState,onReissue,onPosition,onQrOpen}){
   const index=['ko','en','ja','zh-CN','zh-TW'].indexOf(language),w=k=>words[k][index<0?1:index];
   let stableSince=null,stableAnchor=null,stableSamples=0,stableLast=null;let target=request.atmTarget||null,fix=null,denied=false,locationError=null,watch,dialog,key='',disposed=false,polling=false,lastPoll=0,fallbackPending=false,lastFallback=0;
   const el=(tag,cls,text)=>{const n=document.createElement(tag);n.className=cls||'';if(text)n.textContent=text;return n;};
@@ -55,7 +55,7 @@ window.PickupTicket=(()=>{
    const body=el('div','ticket-body'),top=el('div','ticket-label');top.append(el('span','',w('arrived')),el('span','ticket-demo',t('demo')));
    const digits=el('button','ticket-digits',request.code.slice(0,3)+' '+request.code.slice(3));digits.setAttribute('aria-label',t('copy'));digits.onclick=()=>{if(allowed())onCopy();};
    body.append(top,digits,el('small','proximity-target',target.name),el('small','ticket-waiting',w('waiting')));ticket.append(qrButton,body);
-   dialog=el('dialog','withdrawal-qr-dialog');dialog.setAttribute('aria-label',t('scan'));const close=el('button','qr-dialog-close','×');close.setAttribute('aria-label',t('close'));close.onclick=()=>dialog.close();const large=el('div','qr-large');large.innerHTML=qr.createSvgTag({cellSize:10,margin:40,scalable:true});dialog.append(close,el('h2','',t('withdrawal')),large,el('strong','qr-dialog-digits',request.code.slice(0,3)+' '+request.code.slice(3)),el('p','',t('demoQr')));root.append(dialog);qrButton.onclick=()=>{if(allowed())dialog.showModal();};
+   dialog=el('dialog','withdrawal-qr-dialog');dialog.setAttribute('aria-label',t('scan'));const close=el('button','qr-dialog-close','×');close.setAttribute('aria-label',t('close'));close.onclick=()=>dialog.close();const large=el('div','qr-large');large.innerHTML=qr.createSvgTag({cellSize:10,margin:40,scalable:true});dialog.append(close,el('h2','',t('withdrawal')),large,el('strong','qr-dialog-digits',request.code.slice(0,3)+' '+request.code.slice(3)),el('p','',t('demoQr')));root.append(dialog);qrButton.onclick=()=>{if(allowed()){dialog.showModal();onQrOpen?.();}};
   }
   function accept(pos){if(disposed||denied||!Number.isFinite(pos?.timestamp)||fix&&pos.timestamp<fix.timestamp)return;denied=false;locationError=null;fix={lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy,timestamp:pos.timestamp};observeStability(fix);onPosition?.(pos);render();}
   function reject(error,tryFallback=true){
