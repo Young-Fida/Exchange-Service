@@ -18,8 +18,8 @@ test('Google directions retain exact coordinates and selected place identity',()
  assert.equal(url.searchParams.get('api'),'1');
  assert.equal(url.searchParams.get('travelmode'),'walking');
 });
-test('walking order uses actual routes rather than direct-line distances',()=>{
- const items=[{id:'a',distance:10},{id:'b',distance:90},{id:'c',distance:5}];
+test('outside the arrival radius, walking order uses actual routes rather than direct-line distances',()=>{
+ const items=[{id:'a',distance:110},{id:'b',distance:190},{id:'c',distance:105}];
  const ranked=scope.window.AtmMap.rankWalking(items,[{condition:'ROUTE_EXISTS',distanceMeters:500,durationMillis:360000},{condition:'ROUTE_EXISTS',distanceMeters:200,durationMillis:180000},{condition:'ROUTE_NOT_FOUND'}]);
  assert.equal(ranked[0].id,'b');assert.equal(ranked[0].walkRank,1);
  assert.equal(ranked[1].id,'a');assert.equal(ranked[2].walkRank,null);
@@ -56,3 +56,5 @@ test('TMAP IDs are not passed to Google as Google Place IDs',()=>{const url=new 
 
 test('remaining route removes the travelled part even midway through a long segment',()=>{const path=[{lat:35,lng:129},{lat:35,lng:129.01},{lat:35,lng:129.02}];const p={lat:35,lng:129.005};const result=scope.window.AtmMap.remainingRoute(path,p);assert.equal(result.segment,0);assert.ok(Math.abs(result.path[1].lng-129.005)<1e-8);assert.equal(result.path.at(-1).lng,129.02);assert.equal(result.path.some(x=>x.lng===129),false);});
 test('remaining route does not redraw previously passed segments when GPS wobbles',()=>{const path=[{lat:35,lng:129},{lat:35,lng:129.01},{lat:35,lng:129.02}];const first=scope.window.AtmMap.remainingRoute(path,{lat:35,lng:129.015});const next=scope.window.AtmMap.remainingRoute(path,{lat:35,lng:129.009},first.segment);assert.equal(first.segment,1);assert.equal(next.segment,1);assert.equal(next.path.some(x=>x.lng===129),false);});
+
+test('an ATM already within 50m is retained ahead of routable farther ATMs',()=>{const items=[{id:'centum',distance:0},...Array.from({length:7},(_,i)=>({id:'other'+i,distance:79+i*10}))];const rows=[{condition:'ROUTE_NOT_FOUND'},...Array.from({length:7},(_,i)=>({condition:'ROUTE_EXISTS',distanceMeters:120+i*10,durationMillis:100000}))];const top=scope.window.AtmMap.rankWalking(items,rows).slice(0,5);assert.equal(top[0].id,'centum');assert.equal(top[0].walk,null);assert.equal(top.length,5);});

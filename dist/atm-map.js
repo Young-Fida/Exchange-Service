@@ -2,6 +2,7 @@
 window.AtmMap=(()=>{
  const areas={"haeundae":{"lat":35.1631,"lng":129.1635,"names":["해운대","Haeundae","海雲台","海云台","海雲臺"]},"gwangalli":{"lat":35.1532,"lng":129.1186,"names":["광안리","Gwangalli","広安里","广安里","廣安里"]},"nampo":{"lat":35.0977,"lng":129.0325,"names":["남포·중구","Nampo · Jung-gu","南浦・中区","南浦·中区","南浦·中區"]},"seomyeon":{"lat":35.1579,"lng":129.0592,"names":["서면·부산진구","Seomyeon · Busanjin-gu","西面・釜山鎮区","西面·釜山镇区","西面·釜山鎮區"]},"busanStation":{"lat":35.1151,"lng":129.0415,"names":["부산역·동구","Busan Station · Dong-gu","釜山駅・東区","釜山站·东区","釜山站·東區"]},"airport":{"lat":35.1796,"lng":128.938,"names":["김해공항","Gimhae Airport","金海空港","金海机场","金海機場"]},"gijang":{"lat":35.2448,"lng":129.2222,"names":["기장","Gijang","機張","机张","機張"]},"osiria":{"lat":35.1962,"lng":129.2083,"names":["오시리아","Osiria","オシリア","奥西利亚","奧西利亞"]},"songjeong":{"lat":35.1808,"lng":129.1994,"names":["송정","Songjeong","松亭","松亭","松亭"]},"centum":{"lat":35.1691,"lng":129.1328,"names":["센텀시티","Centum City","センタムシティ","Centum City","Centum City"]},"yeongdo":{"lat":35.0905,"lng":129.0678,"names":["영도","Yeongdo","影島","影岛","影島"]},"songdo":{"lat":35.0754,"lng":129.0166,"names":["송도·서구","Songdo · Seo-gu","松島・西区","松岛·西区","松島·西區"]},"dongnae":{"lat":35.2056,"lng":129.0785,"names":["동래","Dongnae","東萊","东莱","東萊"]},"geumjeong":{"lat":35.2431,"lng":129.0922,"names":["부산대·금정구","Pusan National University · Geumjeong-gu","釜山大学・金井区","釜山大学·金井区","釜山大學·金井區"]},"sasang":{"lat":35.1629,"lng":128.9847,"names":["사상","Sasang","沙上","沙上","沙上"]},"hadan":{"lat":35.1062,"lng":128.9668,"names":["하단·사하구","Hadan · Saha-gu","下端・沙下区","下端·沙下区","下端·沙下區"]},"dadaepo":{"lat":35.0485,"lng":128.9669,"names":["다대포","Dadaepo","多大浦","多大浦","多大浦"]},"deokcheon":{"lat":35.2101,"lng":129.0053,"names":["덕천·북구","Deokcheon · Buk-gu","徳川・北区","德川·北区","德川·北區"]},"suyeong":{"lat":35.1679,"lng":129.1145,"names":["수영","Suyeong","水営","水营","水營"]},"yeonje":{"lat":35.1861,"lng":129.0812,"names":["연산·연제구","Yeonsan · Yeonje-gu","蓮山・蓮堤区","莲山·莲堤区","蓮山·蓮堤區"]},"daeyeon":{"lat":35.1354,"lng":129.1006,"names":["대연·남구","Daeyeon · Nam-gu","大淵・南区","大渊·南区","大淵·南區"]},"myeongji":{"lat":35.0975,"lng":128.9181,"names":["명지·강서구","Myeongji · Gangseo-gu","鳴旨・江西区","鸣旨·江西区","鳴旨·江西區"]},"busanGangseo":{"lat":35.2121,"lng":128.9805,"names":["대저·강서구청","Daejeo · Gangseo District Office","大渚・江西区庁","大渚·江西区厅","大渚·江西區廳"]}};
  const text={
+  closeSort:['50m 이내 ATM 우선','ATMs within 50 m first','50m以内のATMを優先','优先显示50米内ATM','優先顯示50公尺內ATM'],
   locationRetrying:['위치 재확인 중 · 마지막 확인 위치 기준','Refreshing GPS · Using last confirmed location','位置再確認中・前回確認位置を使用','正在重新定位 · 使用上次确认位置','正在重新定位 · 使用上次確認位置'],
   codeDistance:['코드 확인 거리 · 직선','Code distance · straight line','コード確認距離・直線','取款码判定距离 · 直线','提款碼判定距離 · 直線'],
   routeDistance:['도보 경로','Walking route','徒歩ルート','步行路线','步行路線'],
@@ -53,7 +54,7 @@ window.AtmMap=(()=>{
  function withDeadline(promise,ms){let timer;return Promise.race([promise,new Promise((_,reject)=>timer=setTimeout(()=>reject(Error('TIMEOUT')),ms))]).finally(()=>clearTimeout(timer));}
  function rankWalking(items,rows){
   const ranked=items.map((p,i)=>{const r=rows[i];const ok=r?.condition==='ROUTE_EXISTS'&&Number.isFinite(r.distanceMeters)&&r.distanceMeters>=0&&Number.isFinite(r.durationMillis)&&r.durationMillis>=0;return {...p,walk:ok?{distanceMeters:r.distanceMeters,durationMillis:r.durationMillis,path:r.path||[]}:null};});
-  ranked.sort((a,b)=>a.walk&&b.walk?a.walk.distanceMeters-b.walk.distanceMeters||a.walk.durationMillis-b.walk.durationMillis:a.walk?-1:b.walk?1:0);
+  ranked.sort((a,b)=>{const nearA=Number.isFinite(a.distance)&&a.distance<=50,nearB=Number.isFinite(b.distance)&&b.distance<=50;if(nearA!==nearB)return nearA?-1:1;if(nearA&&nearB)return a.distance-b.distance;return a.walk&&b.walk?a.walk.distanceMeters-b.walk.distanceMeters||a.walk.durationMillis-b.walk.durationMillis:a.walk?-1:b.walk?1:0;});
   let rank=0;return ranked.map(p=>({...p,walkRank:p.walk?++rank:null}));
  }
  let sdkPromise;
@@ -127,7 +128,7 @@ window.AtmMap=(()=>{
       items=rankWalking(items,result.rows||[]).slice(0,5);
       }catch(error){console.warn('Walking route lookup:',String(error?.message||error?.name||'unavailable').replace(/AIza[A-Za-z0-9_-]+/g,'[hidden]').slice(0,350));if(disposed||id!==queryId)return;items=rankWalking(items,[]).slice(0,5);}
      const count=items.filter(p=>p.walk).length;walkState=count===items.length?'walking':count?'partial':'unavailable';
-     basis.textContent=(live?t('nearby'):t('area'))+(count?' · '+t('walkSort'):'');
+     basis.textContent=(live?t('nearby'):t('area'))+(items.some(p=>p.distance<=50)?' · '+t('closeSort'):count?' · '+t('walkSort'):'');
      status.textContent='';routingNote.textContent=walkState==='walking'?'':t(walkState==='partial'?'partial':'walkUnavailable');
     }else{walkState='empty';status.textContent=t('empty');}
     const {AdvancedMarkerElement}=await google.maps.importLibrary('marker');if(disposed||id!==queryId)return;
