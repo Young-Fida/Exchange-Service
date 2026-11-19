@@ -55,3 +55,5 @@
 .departure-pin{display:block;width:24px;height:24px;background:#e83b43;border:3px solid white;border-radius:50% 50% 50% 0;transform:translate(-50%,-95%) rotate(-45deg);box-shadow:0 3px 10px #80202055;box-sizing:border-box}.departure-pin::after{content:'';display:block;width:7px;height:7px;border-radius:50%;background:white;position:absolute;left:6px;top:6px}
 
 .departure-pin{position:relative}
+
+.top-language[hidden]{display:none}.map-mode .real-map-zoom{top:8px}.map-mode .pickup-arrived .real-map-zoom{top:115px}
