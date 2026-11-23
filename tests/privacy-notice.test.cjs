@@ -21,7 +21,7 @@ for(const method of ['card','passport','biometric'])test(method+' waits for priv
  assert.match(dialog.innerHTML,/How your information is handled/);
  assert.equal(camera+key,0);
  if(method==='biometric')assert.match(dialog.innerHTML,/not automatically deleted/);
- else assert.match(dialog.innerHTML,/never saved or uploaded/);
+ else assert.match(dialog.innerHTML,/Partner banks would handle/);
  dialog.querySelector('[data-auth-start]').listeners.click();
  assert.equal(method==='biometric'?key:camera,1);
 });

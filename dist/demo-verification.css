@@ -4,3 +4,5 @@
 
 /* Passport registration uses the same blue family as the other methods. */
 .verification-method:nth-child(2) .verification-method-icon{background:#eef5ff;color:#0575e6}.passport-capture .capture-outline{border-color:#64aaff}.passport-capture .capture-placeholder svg{color:#64aaff}
+
+.privacy-explanation{white-space:pre-line;text-align:left;line-height:1.8}.verification-current-note{font-size:12px;line-height:1.6;color:#536b86;padding:14px;border-radius:14px;background:#f0f6ff}
