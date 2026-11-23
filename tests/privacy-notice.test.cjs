@@ -18,10 +18,10 @@ for(const method of ['card','passport','biometric'])test(method+' waits for priv
  Node.prototype.querySelectorAll=function(){const nodes=original.call(this);if(nodes.length)methods=nodes;return nodes;};
  scope.window.DemoVerification.open({language:'en'});
  methods.find(n=>n.dataset.authMethod===method).listeners.click();
- assert.match(dialog.innerHTML,/How your information is handled/);
+ assert.match(dialog.innerHTML,/Personal information use/);
  assert.equal(camera+key,0);
- if(method==='biometric')assert.match(dialog.innerHTML,/not automatically deleted/);
- else assert.match(dialog.innerHTML,/Partner banks would handle/);
+ assert.match(dialog.innerHTML,/not used for purposes beyond your consent/);
+ assert.doesNotMatch(dialog.innerHTML,/<details>|verification-current-note/);
  dialog.querySelector('[data-auth-start]').listeners.click();
  assert.equal(method==='biometric'?key:camera,1);
 });

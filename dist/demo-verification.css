@@ -6,3 +6,5 @@
 .verification-method:nth-child(2) .verification-method-icon{background:#eef5ff;color:#0575e6}.passport-capture .capture-outline{border-color:#64aaff}.passport-capture .capture-placeholder svg{color:#64aaff}
 
 .privacy-explanation{white-space:pre-line;text-align:left;line-height:1.8}.verification-current-note{font-size:12px;line-height:1.6;color:#536b86;padding:14px;border-radius:14px;background:#f0f6ff}
+
+.privacy-notice-sheet .privacy-notice-copy{font-size:16px;line-height:1.6;font-weight:400;color:#183653;text-align:left;margin:22px 0 28px;word-break:normal;overflow-wrap:anywhere}.privacy-notice-sheet h2{margin-top:0}.privacy-notice-sheet .verification-actions>.button{font-size:16px;min-height:54px}
