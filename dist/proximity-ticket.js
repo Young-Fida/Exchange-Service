@@ -13,18 +13,18 @@ window.PickupTicket=(()=>{
   target:['이용할 ATM을 선택해주세요','Choose your pickup ATM','利用するATMを選択してください','请选择取款ATM','請選擇提款ATM'],
   gps:['위치 확인이 필요해요','Location is required','位置情報が必要です','需要确认位置','需要確認位置'],
   inaccurate:['위치 정확도를 확인하지 못했어요. 위치를 다시 확인해주세요.','GPS accuracy is unavailable. Please refresh your location.','位置精度を取得できません。位置を再確認してください。','无法确认定位精度，请重新定位。','無法確認定位精度，請重新定位。'],
-  outside:['50m 이내 도착 시 QR·인출 코드가 표시돼요','QR and code appear within 50 m','50m以内でQR・出金コードを表示','进入50米内后显示二维码和取款码','進入50公尺內後顯示QR碼與提款碼'],
+  outside:['30m 이내 도착 시 QR·인출 코드가 표시돼요','QR and code appear within 30 m','30m以内でQR・出金コードを表示','进入30米内后显示二维码和取款码','進入30公尺內後顯示QR碼與提款碼'],
   enable:['위치 확인 켜기','Enable location','位置情報を有効にする','开启定位','開啟定位'],
   denied:['위치 권한을 허용해주세요','Please allow location access','位置情報を許可してください','请允许定位权限','請允許定位權限'],
   waiting:['ATM 출금 확인 대기','Awaiting ATM withdrawal confirmation','ATM出金確認待ち','等待ATM取款确认','等待ATM提款確認'],
-  arrived:['선택한 ATM 50m 이내','Within 50 m of selected ATM','選択したATMの50m以内','已进入所选ATM的50米范围','已進入所選ATM的50公尺範圍']
+  arrived:['선택한 ATM 30m 이내','Within 30 m of selected ATM','選択したATMの30m以内','已进入所选ATM的30米范围','已進入所選ATM的30公尺範圍']
  };
  function gate(target,fix,now,distance,visible=true){
   if(!target)return {unlocked:false,reason:'target',metres:null};
   if(!visible||!fix||!Number.isFinite(fix.lat)||!Number.isFinite(fix.lng)||!Number.isFinite(fix.timestamp)||now-fix.timestamp>60000||now<fix.timestamp)return {unlocked:false,reason:'gps',metres:null};
   const metres=distance(target,fix);if(!Number.isFinite(metres))return {unlocked:false,reason:'gps',metres:null};
   if(!Number.isFinite(fix.accuracy)||fix.accuracy<0)return {unlocked:false,reason:'inaccurate',metres};
- return {unlocked:metres<=50,reason:metres<=50?'arrived':'outside',metres};
+ return {unlocked:metres<=30,reason:metres<=30?'arrived':'outside',metres};
  }
  function attach({root,request,language,t,distance,onCopy,onState,onReissue,onPosition,onQrOpen}){
   const index=['ko','en','ja','zh-CN','zh-TW'].indexOf(language),w=k=>words[k][index<0?1:index];
